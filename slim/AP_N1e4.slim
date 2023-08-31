@@ -135,7 +135,7 @@ initialize() {
           defineGlobal("output", c(newoutput, mut_freq));
         }
         if(sim.cycle==SimEND){
-          writeFile(OutputFile, paste(c(output, "NA", "NA", sim.getValue("maxfreq"), sep=","), append=T);
+          writeFile(OutputFile, paste(c(output, "NA", "NA", sim.getValue("maxfreq")), sep=","), append=T);
           print("time at ENDSIM: " + (clock() - starttime));
           print("ENDSIM Reached the end of simulation at " +sim.cycle+" with mutation at freq="+mut_freq);
         }
@@ -145,7 +145,7 @@ initialize() {
        rest_records = sum(SimOUT-sim.cycle>0); // how many steps of SimSTEP cycles are missing to get to the end of the simulation
        newoutput=c(output, rep("0", rest_records)); //fill in output vector with zeroes
        defineGlobal("output", newoutput);
-       writeFile(OutputFile, paste(output, sim.cycle, "NA", sim.getValue("maxfreq")), sep=","), append=T);
+       writeFile(OutputFile, paste(c(output, sim.cycle, "NA", sim.getValue("maxfreq")), sep=","), append=T);
        print("ENDSIM with lost mut after AP at cycle " + sim.cycle);
        sim.simulationFinished(); // finish this simulation
        print("time at ENDSIM: " + (clock() - starttime));
