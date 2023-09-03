@@ -1,0 +1,1 @@
+t1,t2,h,4000,40000,400000,lost,fixed,maxfreq
