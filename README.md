@@ -10,8 +10,8 @@
 
 SGE job flags:
 
--o  qsub output files will be written to /home/dbrandt/bls\_sim/scripts/sge\_output
--t  number of array jobs to run
+- -o  qsub output files will be written to /home/dbrandt/bls\_sim/scripts/sge\_output
+- -t  number of array jobs to run
 
 These scripts call the slim scripts for each bal sel mode (OD, AP, SA) and effective pop size (1e3 1e4 1e5). 
 
