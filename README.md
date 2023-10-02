@@ -26,12 +26,12 @@ slim takes the following values from the command line:
 - d\_repID=REP is the replicate number
 - t1 and t2 are the selection coefficients
 - h is the dominance parameter
-- d\_folder is the subfolder where where the outputs of this particular slim simulations will be written to. I usually write them to **slimout/**
+- d\_folder is the subfolder where where the outputs of this particular slim simulation will be written to. I usually write them to **slimout/**
 
 ## slimout
 
-One directory for the output of each slim script: AP\_N1e3  AP\_N1e4  AP\_N1e5  SA\_N1e3  SA\_N1e4  SA\_N1e5
+One subdirectory for the output of each slim script: AP\_N1e3  AP\_N1e4  AP\_N1e5  SA\_N1e3  SA\_N1e4  SA\_N1e5
 
 **Output** file names in these folders are:
-    - tree sequences: output\_t{t1}-{t2}\_h{h}\_r{d_repID}\_s{d_seed}\_j{jobid}.trees
-    - allele frequency files: output\_s{t1}-{t2}\_h{h}\_r{d_repID}\_s{d_seed}\_j{jobid}.AP\_N1e3.txt
+- tree sequences: output\_t{t1}-{t2}\_h{h}\_r{d_repID}\_s{d_seed}\_j{jobid}.trees
+- allele frequency files: output\_s{t1}-{t2}\_h{h}\_r{d_repID}\_s{d_seed}\_j{jobid}.AP\_N1e3.txt
