@@ -20,16 +20,17 @@
 #$ -cwd
 #$ -j y
 # Merges STDOUT and STDERR.
-#$ -o /home/dbrandt/bls_sim/scripts/sge_output/
-#$ -t 1-1000
+#$ -o /home/dbrandt/balsel_detection/bls_sim/scripts/sge_output/
+#$ -t 1-100
 
 #The code you want to run now goes here.
 
-OUTDIR=/home/dbrandt/bls_sim/slimout #higher directory to write slim output to (subdirectory defined below)
+OUTDIR=/home/dbrandt/balsel_detection/bls_sim/slimout #higher directory to write slim output to (subdirectory defined below)
+mkdir $OUTDIR/AP_N1e3
 
 SEED=$(shuf -i 1-999999999 -n 1) # slim seed is a random number in that range. Seed number will be written in the slim output file name
 REP=$SGE_TASK_ID # replicate number goes from 1 to the number of array jobs requested with the -t flag above
-slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d t1=$s1 -d t2=$s2 -d h=$h -d d_folder="'$OUTDIR/AP_N1e3/'" /home/dbrandt/bls_sim/slim/AP_N1e3.slim
+slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d t1=$s1 -d t2=$s2 -d h=$h -d d_folder="'$OUTDIR/AP_N1e3/'" /home/dbrandt/balsel_detection/bls_sim/slim/AP_N1e3.slim
 # slim is taking the following values from the command line:
 # jobid=$JOB_ID is the scheduler job ID (will be the same for all tasks in this array)
 # d_seed=$SEED is the slim seed that is a random number in the range 1-999999999

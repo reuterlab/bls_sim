@@ -18,8 +18,8 @@ for s1 in $(seq 0.1 0.1 1); do
     for s2 in $(seq 0.1 0.1 1); do
         for h in 0.5 0.25; do
             qsub -v s1=$s1,s2=$s2,h=$h job_run_AP_N1e3.sh
-            qsub -v s1=$s1,s2=$s2,h=$h job_run_AP_N1e4.sh
-            qsub -v s1=$s1,s2=$s2,h=$h job_run_AP_N1e5.sh
+#            qsub -v s1=$s1,s2=$s2,h=$h job_run_AP_N1e4.sh
+#            qsub -v s1=$s1,s2=$s2,h=$h job_run_AP_N1e5.sh
         done
     done
 done
