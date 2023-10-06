@@ -21,7 +21,6 @@
 #$ -j y
 # Merges STDOUT and STDERR.
 #$ -o /home/dbrandt/balsel_detection/bls_sim/scripts/sge_output/
-#$ -t 1-100
 
 #The code you want to run now goes here.
 
