@@ -21,7 +21,6 @@
 #$ -j y
 # Merges STDOUT and STDERR.
 #$ -o /home/dbrandt/bls_sim/scripts/sge_output/
-#$ -t 1-1000
 
 #The code you want to run now goes here.
 
