@@ -1,7 +1,7 @@
-// Last modified by Debora Brandt 30 Aug 2023
+// Last modified by Debora Brandt 09 Oct 2023
 
 //To run:
-//slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d t1=$t1 -d t2=$t2 -d h=$h -d d_folder="'$OUTDIR'/AP_N1e3/" AP_N1e3.slim
+//slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d t1=$t1 -d t2=$t2 -d h=$h -d d_folder="'$OUTDIR'/" AP_N1e3.slim
 
 ///////////////////////////////////////////////////////////////
 
@@ -60,37 +60,15 @@ initialize() {
     initializeGenomicElement(g1, 0, full_genome_len);
 }
 //First cycle: create ancestral pop and empty pops
-//NOTE:  reproduction() happens *before* early() in a nonWF model
-1 early() {
+1 first() {
     sim.addSubpop("p1", asInteger(N));
     sim.subpopulations.individuals.tagF = 1.0; // all individuals start with fitness of 1
     sim.setValue("maxfreq", 0); // variable to store maximum frequency achieved by mutation
-}
-2: early(){
-    sim.subpopulations.individuals.tagF = 1.0; // all individuals start with fitness of 1
-}
-// add mutation late in this cycle because otherwise I got error "addNewMutation() cannot add mutations to individuals of age > 0 when tree-sequence recording is enabled, to prevent internal inconsistencies."
-1 late(){
     g = sim.subpopulations.genomes;
+    // add mutation at one random chromosome (frequency 1/2N)    
     g[sample(1:(2*N),1)].addNewMutation(m1, 0.0, 4999, originSubpop=1);
-    // Start creating output
-    writeFile(OutputFile, "t1,t2,h,4000,40000,400000,lost,fixed,maxfreq" , append=F);
-    defineGlobal("output", c(t1,t2,h));
-    print("STARINTING AP at cycle "+sim.cycle);
-    print("t1 "+t1);
-    print("t2 "+t2);
-    print("h "+h);      
-    balsel1 = (t2*h) / (1-h+t2*h^2);
-    balsel2 = (t2*(1-h)) / (h*(1-t2*h));
-    print("conditions for balsel: "+balsel1+"<"+t1+"<"+balsel2);
-    pstar = (t1*(1-h)-t2*h+t1*t2*h^2) / ((t1+t2)*(1-2*h)+2*t1*t2*h^2);
-    print("pstar (allele A2) = "+ (1-pstar));
-    alpha = (t1+t2)*(1-2*h)+2*t1*t2*h^2;
-    print("alpha="+alpha);
-}
-// early in each cycle, calculate fitness of individuals
-2:400000 early() {
-    for (mut in sim.mutations) {
+	 // calculate fitness
+	 for (mut in sim.mutations) {
       for (pop in sim.subpopulations) {
         for (ind in pop.individuals) {
           num_copies = sum(ind.genomes.containsMutations(mut));
@@ -102,17 +80,30 @@ initialize() {
              ind.tagF = ind.tagF * (1.0 - t1);
           }  
         }
-      sum_fitness = sum(pop.individuals.tagF); 
-      fits = pop.individuals.tagF * N / sum_fitness; // relative fitness
-      pop.individuals.fitnessScaling = fits;
       }
     }
+    // Start creating output
+    writeFile(OutputFile, "t1,t2,h,4000,40000,400000,lost,fixed,maxfreq" , append=F);
+    defineGlobal("output", c(t1,t2,h));
+    print("STARTING AP at cycle "+sim.cycle);
+    print("t1 "+t1);
+    print("t2 "+t2);
+    print("h "+h);      
+    balsel1 = (t2*h) / (1-h+t2*h^2);
+    balsel2 = (t2*(1-h)) / (h*(1-t2*h));
+    print("conditions for balsel: "+balsel1+"<"+t1+"<"+balsel2);
+    pstar = (t1*(1-h)-t2*h+t1*t2*h^2) / ((t1+t2)*(1-2*h)+2*t1*t2*h^2);
+    print("pstar (allele A2) = "+ (1-pstar));
+    alpha = (t1+t2)*(1-2*h)+2*t1*t2*h^2;
+    print("alpha="+alpha);
 }
-
-// late in each cycle, check if mutation was fixed or lost, and print out it's frequency
-2:400000 late() {
+//NOTE:  reproduction() and survival() happen *after* first() and *before* late in a nonWF model
+// late in each cycle, check if mutation was fixed or lost, and if so finish simulation
+// if mutation is still segregating, print out its frequency ever X generations, and recalculate fitness of individuals
+1:400000 late() {
     if(size(sim.mutations)>0){ // if mutation is still there
       for(mut in sim.mutations){
+        // calculate mutation frequency
         mut_freq = mean(p1.individuals.genomes.containsMutations(mut));
         if(mut_freq>sim.getValue("maxfreq")){
           sim.setValue("maxfreq", mut_freq);
@@ -133,25 +124,39 @@ initialize() {
         if(any(sim.cycle == SimOUT)){
           newoutput=output;
           defineGlobal("output", c(newoutput, mut_freq));
-          sim.treeSeqOutput(d_folder+"output_t"+t1+"-"+t2+"_h"+h+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+ ".trees");
+          sim.treeSeqOutput(d_folder+"output_t"+t1+"-"+t2+"_h"+h+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
         }
         if(sim.cycle==SimEND){
           writeFile(OutputFile, paste(c(output, "NA", "NA", sim.getValue("maxfreq")), sep=","), append=T);
+          sim.treeSeqOutput(d_folder+"output_t"+t1+"-"+t2+"_h"+h+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
           print("time at ENDSIM: " + (clock() - starttime));
           print("ENDSIM Reached the end of simulation at " +sim.cycle+" with mutation at freq="+mut_freq);
+          sim.simulationFinished(); // finish this simulation
         }
-      }
-    }
-    else{ // if there are zero mutations
+        // recalculate fitness of individuals
+	     for (mut in sim.mutations) {
+          for (pop in sim.subpopulations) {
+            for (ind in pop.individuals) {
+              num_copies = sum(ind.genomes.containsMutations(mut));
+              if (num_copies == 0) { // if this indiv is homoz A1 their fitness will be:
+            	 ind.tagF = 1.0 - t2;
+              } else if (num_copies == 1) { // if this indiv is heterozygote A1A2, their fitness will be:
+                 ind.tagF = (1.0 - t1*h) * (1.0 - t2*h);
+              } else if (num_copies == 2) { // if this indiv is homozygote A2A2, their fitness will be:
+                 ind.tagF = 1.0 - t1;
+              }     
+            } //for ind
+          } //for pop
+        } //for mut
+      } //if mut_freq !=1
+    } // if size(sim_mutations>0)
+    else{ // if there are zero mutations, end simulations and write output
        rest_records = sum(SimOUT-sim.cycle>0); // how many steps of SimOUT cycles are missing to get to the end of the simulation
        newoutput=c(output, rep("0", rest_records)); //fill in output vector with zeroes
        defineGlobal("output", newoutput);
        writeFile(OutputFile, paste(c(output, sim.cycle, "NA", sim.getValue("maxfreq")), sep=","), append=T);
        print("ENDSIM with lost mut after AP at cycle " + sim.cycle);
-       sim.simulationFinished(); // finish this simulation
        print("time at ENDSIM: " + (clock() - starttime));
+       sim.simulationFinished(); // finish this simulation
     }
-}
-400000 late(){
-    sim.treeSeqOutput(d_folder+"output_t"+t1+"-"+t2+"_h"+h+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+ ".trees");
 }
