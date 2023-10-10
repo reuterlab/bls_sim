@@ -6,10 +6,15 @@ import glob
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import argparse
+import sys
 
-outdir="/home/dbrandt/balsel_detection/bls_sim/slimout/AP_N1e3/"
+parser = argparse.ArgumentParser(description="plot grids")
+parser.add_argument("-o", "--outdir", help="directory with slim output")
+args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])
 
-files=glob.glob(outdir+"*.txt")
+outdir = args.outdir
+files=glob.glob(outdir+"/*.txt")
 
 tgrid4k_h50 = np.zeros((10,10))
 tgrid40k_h50 = np.zeros((10,10))
@@ -25,8 +30,8 @@ for file in files:
         line = f.readline().strip().split(',')
         if line[0]: # if file has more than header
             # columns: t1,t2,h,4000,40000,400000,lost,fixed,maxfreq
-            t1 = int((float(line[0])-0.1) * 10)
-            t2 = int((float(line[1])-0.1) * 10)
+            t1 = int((round(float(line[0])-0.1, 2)) * 10)
+            t2 = int((round(float(line[1])-0.1, 2)) * 10)
             h = float(line[2])
             f4k = float(line[3])
             f40k = float(line[4])
@@ -39,13 +44,11 @@ for file in files:
                 tgrid40k_h50[t1,t2] += f40k>0
                 tgrid400k_h50[t1,t2] += f400k>0
                 tot_h50[t1,t2]+=1
-                print(str(t1)+" "+str(t2)+" "+str(h))
             if h==0.25:
                 tgrid4k_h25[t1,t2] += f4k>0
                 tgrid40k_h25[t1,t2] += f40k>0
                 tgrid400k_h25[t1,t2] += f400k>0
                 tot_h25[t1,t2]+=1
-                print(str(t1)+" "+str(t2)+" "+str(h))
 
 plt.figure()
 ax = sns.heatmap(tot_h25, linewidth=0.5,
@@ -55,7 +58,7 @@ ax = sns.heatmap(tot_h25, linewidth=0.5,
 ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 #plt.show()
-plt.savefig(outdir+"h25_nsim.png")
+plt.savefig(outdir+"/h25_nsim.png")
 
 plt.figure()
 ax = sns.heatmap(tot_h50, linewidth=0.5,
@@ -65,7 +68,7 @@ ax = sns.heatmap(tot_h50, linewidth=0.5,
 ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 #plt.show()
-plt.savefig(outdir+"h50_nsim.png")
+plt.savefig(outdir+"/h50_nsim.png")
 
 # for h=0.25
 plt.figure()
@@ -77,7 +80,7 @@ ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 ax.set_title('4000 generations')
 #plt.show()
-plt.savefig(outdir+"h25_t4kgrid.png")
+plt.savefig(outdir+"/h25_t4kgrid.png")
 
 plt.figure()
 ax = sns.heatmap(tgrid40k_h25, linewidth=0.5,
@@ -88,7 +91,7 @@ ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 ax.set_title('40000 generations')
 #plt.show()
-plt.savefig(outdir+"h25_t40kgrid.png")
+plt.savefig(outdir+"/h25_t40kgrid.png")
 
 plt.figure()
 ax = sns.heatmap(tgrid400k_h25, linewidth=0.5,
@@ -99,7 +102,7 @@ ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 ax.set_title('400000 generations')
 #plt.show()
-plt.savefig(outdir+"h25_t400kgrid.png")
+plt.savefig(outdir+"/h25_t400kgrid.png")
 
 #for h=0.5
 plt.figure()
@@ -111,7 +114,7 @@ ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 ax.set_title('4000 generations')
 #plt.show()
-plt.savefig(outdir+"h50_t4kgrid.png")
+plt.savefig(outdir+"/h50_t4kgrid.png")
 
 plt.figure()
 ax = sns.heatmap(tgrid40k_h50, linewidth=0.5,
@@ -122,7 +125,7 @@ ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 ax.set_title('40000 generations')
 #plt.show()
-plt.savefig(outdir+"h50_t40kgrid.png")
+plt.savefig(outdir+"/h50_t40kgrid.png")
 
 plt.figure()
 ax = sns.heatmap(tgrid400k_h50, linewidth=0.5,
@@ -133,4 +136,4 @@ ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 ax.set_title('400000 generations')
 #plt.show()
-plt.savefig(outdir+"h50_t400kgrid.png")
+plt.savefig(outdir+"/h50_t400kgrid.png")
