@@ -1,4 +1,4 @@
-// Last modified by Debora Brandt 09 Oct 2023
+// Last modified by Debora Brandt 11 Oct 2023
 
 //To run:
 //slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d t1=$t1 -d t2=$t2 -d h=$h -d d_folder="'$OUTDIR'/" AP_N1e3.slim
@@ -27,13 +27,14 @@ survival() {
 
 initialize() {
     // command line params
-//    defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/AP_N1e3/");
-//    defineConstant("d_repID", 1); // 1-10000
-//    defineConstant("d_seed", 1); // random number $RANDOM
-//    defineConstant("jobid", 000000); // job id in cluster $JOB_ID
-//    defineConstant("t1",0.02); // grid 0-0.2 by 0.01
-//    defineConstant("t2",0.02);// grid 0-0.2 by 0.01
-//    defineCosntant("h", 0.5); // 0.5 or 0.25
+    defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/AP_N1e3/");
+    defineConstant("d_repID", 1); // 1-10000
+    defineConstant("d_seed", 1); // random number $RANDOM
+    defineConstant("jobid", 000000); // job id in cluster $JOB_ID
+    defineConstant("t1",0.02); // grid 0-0.2 by 0.01
+    defineConstant("t2",0.02);// grid 0-0.2 by 0.01
+    defineConstant("h", 0.5); // 0.5 or 0.25
+    defineConstant("rand_inv", 1);
 
     setSeed(d_seed); 
     defineConstant("OutputFile", d_folder+"output_t"+t1+"-"+t2+"_h"+h+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+ ".AP_N1e3.txt");
@@ -67,22 +68,22 @@ initialize() {
     g = sim.subpopulations.genomes;
     // add mutation at one random chromosome (frequency 1/2N)    
     g[sample(1:(2*N),1)].addNewMutation(m1, 0.0, 4999, originSubpop=1);
-	 // calculate fitness
-	 for (mut in sim.mutations) {
-      for (pop in sim.subpopulations) {
-        for (ind in pop.individuals) {
-          num_copies = sum(ind.genomes.containsMutations(mut));
-          if (num_copies == 0) { // if this indiv is homoz A1 their fitness will be:
-            ind.tagF = ind.tagF * (1.0 - t2);
-          } else if (num_copies == 1) { // if this indiv is heterozygote A1A2, their fitness will be:
-             ind.tagF = ind.tagF * (1.0 - t1*h) * (1.0 - t2*h);
-          } else if (num_copies == 2) { // if this indiv is homozygote A2A2, their fitness will be:
-             ind.tagF = ind.tagF * (1.0 - t1);
-          }  
-        }
-      }
-    }
-    // Start creating output
+    for (mut in sim.mutations){ // start mutation with selection coefficient of 1
+    // fitness will be calculated below and will be AA=0.5, Aa=0.75, aa=1
+        mut.setValue("s", 1);
+        mut.setValue("bls", "NA");
+        sim.setValue("bls", "NA");
+	 // calculate fitness under positive selection
+	 	  for(pop in sim.subpopulations){
+	    	for(ind in pop.individuals){
+    			num_copies = sum(ind.genomes.containsMutations(mut));
+      		// fitness of the 3 genotypes will be AA=1+0, Aa=1+0.5, aa=1+1
+      		// normalized fitness: AA=0.5, Aa=0.75, aa=1
+      		ind.tagF = 1.0 + (mut.getValue("s")*num_copies/2);
+    	 	}//for ind
+    	}//for pop
+    }//for mut
+	 // Start creating output
     writeFile(OutputFile, "t1,t2,h,4000,40000,400000,lost,fixed,maxfreq" , append=F);
     defineGlobal("output", c(t1,t2,h));
     print("STARTING AP at cycle "+sim.cycle);
@@ -134,20 +135,60 @@ initialize() {
           sim.simulationFinished(); // finish this simulation
         }
         // recalculate fitness of individuals
-	     for (mut in sim.mutations) {
-          for (pop in sim.subpopulations) {
-            for (ind in pop.individuals) {
-              num_copies = sum(ind.genomes.containsMutations(mut));
-              if (num_copies == 0) { // if this indiv is homoz A1 their fitness will be:
-            	 ind.tagF = 1.0 - t2;
-              } else if (num_copies == 1) { // if this indiv is heterozygote A1A2, their fitness will be:
-                 ind.tagF = (1.0 - t1*h) * (1.0 - t2*h);
-              } else if (num_copies == 2) { // if this indiv is homozygote A2A2, their fitness will be:
-                 ind.tagF = 1.0 - t1;
-              }     
-            } //for ind
-          } //for pop
-        } //for mut
+		  // if the mutation is still under positive selection        
+        if(mut.getValue("bls")=="NA"){
+        	 for(pop in sim.subpopulations){ 
+          for(ind in pop.individuals){
+            num_copies = sum(ind.genomes.containsMutations(mut));
+            ind.tagF = 1.0 + (mut.getValue("s")*num_copies/2);
+          }
+          }
+          // if frequency is >5%, change selection regime to bls
+          if(mut_freq>0.05){
+          	mut.setValue("bls",1);
+          	sim.setValue("bls",1);
+          }
+        }
+        // if the mutation is under balancing selection
+        if (mut.getValue("bls")==1){ 
+			 for (mut in sim.mutations) {
+      	 	for (pop in sim.subpopulations) {
+        			for (ind in pop.individuals) {
+          			num_copies = sum(ind.genomes.containsMutations(mut));
+          			if (rand_inv){ // if we're randomly deciding which ine is the invading allele
+             			flipcoin = sample(0:1, 1); //randomly sample 0 or 1
+             			if (flipcoin){ // 50% of the time A2 is invading
+	            			if (num_copies == 0) { // if this indiv is homoz A1 their fitness will be:
+   	           			ind.tagF = (1.0 - t2);
+      	      			} else if (num_copies == 1) { // if this indiv is heterozygote A1A2, their fitness will be:
+         	     			ind.tagF = (1.0 - t1*h) * (1.0 - t2*h);
+         	   			} else if (num_copies == 2) { // if this indiv is homozygote A2A2, their fitness will be:
+            	 			ind.tagF = (1.0 - t1);
+          	   			} 
+          	 			}
+		          	 	else { // the other 50% of the time A1 is invading (note swapped t1 and t2)
+	            			if (num_copies == 0) { // if this indiv is homoz A2 their fitness will be:
+   	           			ind.tagF = (1.0 - t1);
+      	      			} else if (num_copies == 1) { // if this indiv is heterozygote A1A2, their fitness will be:
+         	     			ind.tagF = (1.0 - t1*h) * (1.0 - t2*h);
+         	   			} else if (num_copies == 2) { // if this indiv is homozygote A1A1, their fitness will be:
+            	  			ind.tagF = (1.0 - t2);
+          	   			} 
+          	 			}
+          			} // if randomize indivs
+          			else { // otherwise, allele A2 is always the invading one
+	         			if (num_copies == 0) { // if this indiv is homoz A1 their fitness will be:
+   	         		ind.tagF = (1.0 - t2);
+      	    			} else if (num_copies == 1) { // if this indiv is heterozygote A1A2, their fitness will be:
+         	    		ind.tagF = (1.0 - t1*h) * (1.0 - t2*h);
+         	 			} else if (num_copies == 2) { // if this indiv is homozygote A2A2, their fitness will be:
+            	 		ind.tagF = (1.0 - t1);
+          	 			}
+          			} // not randomizing 
+        			} // for ind
+      		} //for pop
+    		} // for mut
+    	  }// if bls
       } //if mut_freq !=1
     } // if size(sim_mutations>0)
     else{ // if there are zero mutations, end simulations and write output
