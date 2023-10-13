@@ -1,7 +1,7 @@
 // Last modified by Debora Brandt 13 Oct 2023
 
 //To run:
-//slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d t1=$t1 -d t2=$t2 -d h=$h -d d_folder="'$OUTDIR'/" AP_N1e3.slim
+//slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d t1=$t1 -d t2=$t2 -d h=$h -d d_folder="'$OUTDIR'/" -d rand_inv=1 AP_N1e3.slim
 
 ///////////////////////////////////////////////////////////////
 
@@ -27,16 +27,16 @@ survival() {
 
 initialize() {
     // command line params
-    defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/AP_N1e3/");
-    defineConstant("d_repID", 1); // 1-10000
-    defineConstant("d_seed", 1); // random number $RANDOM
-    defineConstant("jobid", 000000); // job id in cluster $JOB_ID
-    defineConstant("t1",0.02); // grid 0-0.2 by 0.01
-    defineConstant("t2",0.02);// grid 0-0.2 by 0.01
-    defineConstant("h", 0.25); // 0.5 or 0.25
-    defineConstant("rand_inv", 1);
+    //defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/AP_N1e3/");
+    //defineConstant("d_repID", 1); // 1-10000
+    //defineConstant("d_seed", 1); // random number $RANDOM
+    //defineConstant("jobid", 000000); // job id in cluster $JOB_ID
+    //defineConstant("t1",0.02); // grid 0-0.2 by 0.01
+    //defineConstant("t2",0.02);// grid 0-0.2 by 0.01
+    //defineConstant("h", 0.25); // 0.5 or 0.25
+    //defineConstant("rand_inv", 1);
 
-    //setSeed(d_seed); 
+    setSeed(d_seed); 
     defineConstant("OutputFile", d_folder+"output_t"+t1+"-"+t2+"_h"+h+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+ ".AP_N1e3.txt");
     defineConstant("SimEND", 400000);
     defineConstant("SimOUT", c(4000,40000,400000));
