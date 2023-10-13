@@ -1,7 +1,7 @@
-// Last modified by Debora Brandt 30 Aug 2023
+// Last modified by Debora Brandt 13 ocd 2023
 
 //To run:
-//slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sel1=$s1 -d sel2=$s2 -d h=$h -d d_folder="'$OUTDIR'/OD_N1e3/" OD_N1e3.slim
+//slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sel1=$s1 -d sel2=$s2 -d h=$h -d d_folder="'$OUTDIR'/" -d rand_inv=1 OD_N1e3.slim
 
 ///////////////////////////////////////////////////////////////
 
@@ -27,15 +27,16 @@ survival() {
 
 initialize() {
     //define command line params:
-//    defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/OD_N1e3_tests/");
-//    defineConstant("d_repID", 1); // 1-10000
-//    defineConstant("d_seed", 31148); // random number $RANDOM
-//    defineConstant("jobid", 000000); // job id in cluster $JOB_ID
-//    defineConstant("sel1", 0.01); // grid 0-0.2 by 0.01
- //   defineConstant("sel2", 0.01); // grid 0-0.2 by 0.01
- //   defineConstant("h", 0.5); // 0.5 or 0.25
+    defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/OD_N1e3/");
+    defineConstant("d_repID", 1); // 1-10000
+    defineConstant("d_seed", 31148); // random number $RANDOM
+    defineConstant("jobid", 000000); // job id in cluster $JOB_ID
+    defineConstant("sel1", 0.01); // grid 0-0.2 by 0.01
+    defineConstant("sel2", 0.01); // grid 0-0.2 by 0.01
+    defineConstant("h", 0.5); // 0.5 or 0.25
+    defineConstant("rand_inv", 1);
 
-    setSeed(d_seed);
+    //setSeed(d_seed);
     defineConstant("OutputFile", d_folder+"output_s"+sel1+"-"+sel2+"_h"+h+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+ ".OD_N1e3.txt");
     defineConstant("SimEND", 400000);
 	 defineConstant("SimOUT", c(4000,40000,400000));
@@ -59,24 +60,34 @@ initialize() {
     // single-locus chromosome
     initializeGenomicElement(g1, 0, full_genome_len);
 }
-//First cycle: create an empty pop
-//NOTE:  reproduction() happens *before* early() in a nonWF model
-1 early() {
+//First cycle: create pop and add mutation
+1 first() {
     sim.addSubpop("p1", asInteger(N));
     sim.subpopulations.individuals.tagF = 1.0; // all individuals start with fitness of 1
     sim.setValue("maxfreq", 0); // variable to store maximum frequency achieved by mutation
-}
-2: early(){
-    sim.subpopulations.individuals.tagF = 1.0; // all individuals start with fitness of 1
-}
-// add mutation late in this cycle because otherwise I got error "addNewMutation() cannot add mutations to individuals of age > 0 when tree-sequence recording is enabled, to prevent internal inconsistencies."
-1 late(){
+    sim.setValue("invading_allele",0);//variable to store which one is the new mutation (invading allele)
     g = sim.subpopulations.genomes;
+    //add mutation at one random chromosome (frequency 1/2N)
     g[sample(1:(2*N),1)].addNewMutation(m1, 0.0, 4999, originSubpop=1);
+    // POSITIVE SELECTION
+    for (mut in sim.mutations){ // start mutation with selection coefficient of -1
+    // relative fitness will be calculated below and will be AA=0.5, Aa=0.75, aa=1
+        mut.setValue("s", 1);
+        mut.setValue("bls", "NA");
+        sim.setValue("bls", "NA");
+	     // calculate fitness under positive selection
+	 	  for(pop in sim.subpopulations){
+	    	for(ind in pop.individuals){
+    			num_copies = sum(ind.genomes.containsMutations(mut));
+      		// fitness of the 3 genotypes will be AA=1+0, Aa=1+0.5, aa=1+1
+      		// normalized fitness: AA=0.5, Aa=0.75, aa=1
+      		ind.tagF = 1.0 + (mut.getValue("s")*num_copies/2);
+    	 	}//for ind
+    	}//for pop
+    }//for mut
     // Start creating output
-    writeFile(OutputFile, "sel1,sel2,h,4000,40000,400000,lost,fixed,maxfreq" , append=F);
+    writeFile(OutputFile, "sel1,sel2,h,bls_start,4000,40000,400000,lost,fixed,maxfreq,newmut" , append=F);
     defineGlobal("output", c(sel1,sel2,h));
-    print("STARTING OD at cycle "+sim.cycle);
     print("sel1 "+sel1);
     print("sel2 "+sel2);
     pstar = sel1 / (sel1+sel2);
@@ -84,67 +95,110 @@ initialize() {
     alpha = sel1+sel2;
     print("alpha="+alpha);
 }
-// early in each cycle, calculate fitness of individuals
-2:400000 early() {
-    for (mut in sim.mutations) {
-      for (pop in sim.subpopulations) {
-        for (ind in pop.individuals) {
-          num_copies = sum(ind.genomes.containsMutations(mut));
-          if (num_copies == 0) { // if this indiv is homoz A1 their fitness will be:
-            ind.tagF = ind.tagF * (1.0 - sel1);
-          } else if (num_copies == 2) { // if this indiv is homozygote A2A2, their fitness will be:
-            ind.tagF = ind.tagF * (1.0 - sel2);
-          }// all individuals start each generation with fitness =1, so heterozygotes remain with ind.tagF=1  
-        }
-      sum_fitness = sum(pop.individuals.tagF); 
-      fits = pop.individuals.tagF * N / sum_fitness; // relative fitness
-      pop.individuals.fitnessScaling = fits;
-      }
-    }
-}
-
-// late in each cycle, check if mutation was fixed or lost, and print out it's frequency
-2:400000 late() {
+//NOTE:  reproduction() and survival() happen *after* first() and *before* late in a nonWF model
+// late in each cycle, check if mutation was fixed or lost, and if so finish simulation
+// if mutation is still segregating, print out its frequency ever X generations, and recalculate fitness of individuals
+1:400000 late() {
     if(size(sim.mutations)>0){ // if mutation is still there
-        for(mut in sim.mutations){
-          mut_freq = mean(p1.individuals.genomes.containsMutations(mut));
-          if(mut_freq>sim.getValue("maxfreq")){
-            sim.setValue("maxfreq", mut_freq);
-          }
+      for(mut in sim.mutations){
+        // calculate mutation frequency
+        mut_freq = mean(p1.individuals.genomes.containsMutations(mut));
+        if(mut_freq>sim.getValue("maxfreq")){
+          sim.setValue("maxfreq", mut_freq);
         }
-        if(mut_freq==1){ // if mutation was fixed
-          rest_records = sum(SimOUT-sim.cycle>0); // how many steps of SimSTEP 
-          // how many steps of SimSTEP cycles are missing to get to the end of the simulation
-          newoutput=c(output, rep("1", rest_records));
-          // write to out file that frequency of mutation is 1 until the end
-          defineGlobal("output", newoutput);
-          writeFile(OutputFile, paste(c(output, "NA", sim.cycle,sim.getValue("maxfreq")), sep=","), append=T);
-          sim.simulationFinished();
+      }
+      if(mut_freq==1){ // if mutation was fixed
+        rest_records = sum(SimOUT-sim.cycle>0); // how many checkpoints(SimOUT) are missing to get to the end of the simulation
+        newoutput=c(output, rep("1", rest_records));
+        // write to out file that frequency of mutation is 1 until the end
+        defineGlobal("output", newoutput);
+        writeFile(OutputFile, paste(c(output, "NA", sim.cycle,sim.getValue("maxfreq"),sim.getValue("invading_allele")), sep=","), append=T);
+        sim.simulationFinished();
+        print("time at ENDSIM: " + (clock() - starttime));
+        print("ENDSIM Finished with fixed mut at cycle " + sim.cycle);
+      }
+      else{ // if mutation is segregating, save its frequency at every SimOUT generations
+        if(any(sim.cycle == SimOUT)){
+          newoutput=output;
+          defineGlobal("output", c(newoutput, mut_freq));
+          //save tree sequence at this timepoint as well
+          sim.treeSeqOutput(d_folder+"output_s"+sel1+"-"+sel2+"_h"+h+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
+        }
+        if(sim.cycle == SimEND){ //if this is the last generation we're simulating, write outputs and end simulation
+          writeFile(OutputFile, paste(c(output, "NA", "NA", sim.getValue("maxfreq"), sim.getValue("invading_allele")), sep=","), append=T);
+          sim.treeSeqOutput(d_folder+"output_s"+sel1+"-"+sel2+"_h"+h+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
           print("time at ENDSIM: " + (clock() - starttime));
-          print("ENDSIM Finished with fixed mut at cycle " + sim.cycle);
+          print("ENDSIM Reached the end of simulation at " +sim.cycle+" with mutation at freq="+mut_freq);
+          sim.simulationFinished(); // finish this simulation
         }
-        else{ // if mutation is segregating, save its frequency at every SimOUT generations
-          if(any(sim.cycle == SimOUT)){
-            newoutput=output;
-            defineGlobal("output", c(newoutput, mut_freq));
+        // recalculate fitness of individuals
+	  	  // if the mutation is still under positive selection        
+        if(mut.getValue("bls")=="NA"){
+        	 for(pop in sim.subpopulations){ 
+            for(ind in pop.individuals){
+              num_copies = sum(ind.genomes.containsMutations(mut));
+              ind.tagF = 1.0 + (mut.getValue("s")*num_copies/2);
+            }
           }
-          if(sim.cycle == SimEND){
-            writeFile(OutputFile, paste(c(output, "NA", "NA", sim.getValue("maxfreq")), sep=","), append=T);
-            print("time at ENDSIM: " + (clock() - starttime));
-            print("ENDSIM Reached the end of simulation at " +sim.cycle+" with mutation at freq="+mut_freq);
+          // if frequency is >5%, change selection regime to bls
+          if(mut_freq>0.05){
+          	mut.setValue("bls",1);
+          	sim.setValue("bls",1);
+          	newoutput=output;
+            defineGlobal("output", c(newoutput, sim.cycle));
+            print("STARTING OD at cycle "+sim.cycle);
           }
         }
-    }
-    else{ // if there are zero mutations
+        // if the mutation is under balancing selection
+        if (mut.getValue("bls")==1){ 
+		    for (mut in sim.mutations) {
+            for (pop in sim.subpopulations) {
+        		  for (ind in pop.individuals) {
+				    num_copies = sum(ind.genomes.containsMutations(mut));
+        			 if (rand_inv){ // if we're randomly deciding which one is the invading allele
+             	   invading_allele = sample(1:2, 1); //randomly sample A1 or A2 as the invading allele
+             		sim.setValue("invading_allele", invading_allele);
+             		if (invading_allele == 2){ // 50% of the time A2 is invading
+		              if (num_copies == 0) { // if this indiv is homoz A1 their fitness will be:
+						  ind.tagF = 1.0 - sel1;
+                    } else if (num_copies == 1) { // if this indiv is heterozygote A1A2, their fitness will be:
+         	     	  ind.tagF = 1.0;
+         	   	  }else if (num_copies == 2) { // if this indiv is homozygote A2A2, their fitness will be:
+		              ind.tagF = 1.0 - sel2;
+         		 	  }
+         		 	}
+		          	if (invading_allele == 1) { // the other 50% of the time A1 is invading (note swapped s1 and s2 below)
+		              if (num_copies == 0) { // if this indiv is homoz A2 their fitness will be:
+						  ind.tagF = 1.0 - sel2;
+                    } else if (num_copies == 1) { // if this indiv is heterozygote A1A2, their fitness will be:
+         	     	  ind.tagF = 1.0;
+         	   	  }else if (num_copies == 2) { // if this indiv is homozygote A1A1, their fitness will be:
+		              ind.tagF = 1.0 - sel1;
+         		 	  }        
+         		 	}
+         		 } //if randomize invading
+          		 else { // otherwise, allele A2 is always the invading one
+		            if (num_copies == 0) { // if this indiv is homoz A1 their fitness will be:
+						ind.tagF = 1.0 - sel1;
+                  } else if (num_copies == 1) { // if this indiv is heterozygote A1A2, their fitness will be:
+         	     	ind.tagF = 1.0;
+         	   	}else if (num_copies == 2) { // if this indiv is homozygote A2A2, their fitness will be:
+		            ind.tagF = 1.0 - sel2;
+         		 	}
+         		 } //not randomizing
+         	  }// for ind
+         	}//for pop
+          } //for mut
+        }//if bls
+      }//if mut_freq!=1
+    }//if size(sim_mutations>0)
+    else{ // if there are zero mutations (means mutation was lost), end simulations and write output
       rest_records = sum(SimOUT-sim.cycle>0); // how many steps of SimSTEP cycles are missing to get to the end of the simulation
       newoutput=c(output, rep("0", rest_records)); //fill in output vector with zeroes
       defineGlobal("output", newoutput);
-      writeFile(OutputFile, paste(c(output, sim.cycle, "NA",sim.getValue("maxfreq")), sep=","), append=T);
+      writeFile(OutputFile, paste(c(output, sim.cycle, "NA",sim.getValue("maxfreq"), sim.getValue("invading_allele")), sep=","), append=T);
       print("ENDSIM with lost mut at cycle " + sim.cycle);
-      sim.simulationFinished(); // finish this simulation
       print("time at ENDSIM: " + (clock() - starttime));
+      sim.simulationFinished(); // finish this simulation
     }
-}
-400000 late(){
-    sim.treeSeqOutput(d_folder+"output_s"+sel1+"-"+sel2+"_h"+h+	"_r" + d_repID + "_s"+d_seed+"_j"+jobid+ ".trees");
 }
