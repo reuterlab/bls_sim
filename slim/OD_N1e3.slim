@@ -1,4 +1,4 @@
-// Last modified by Debora Brandt 13 ocd 2023
+// Last modified by Debora Brandt 13 oct 2023
 
 //To run:
 //slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sel1=$s1 -d sel2=$s2 -d h=$h -d d_folder="'$OUTDIR'/" -d rand_inv=1 OD_N1e3.slim
@@ -27,16 +27,16 @@ survival() {
 
 initialize() {
     //define command line params:
-    defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/OD_N1e3/");
-    defineConstant("d_repID", 1); // 1-10000
-    defineConstant("d_seed", 31148); // random number $RANDOM
-    defineConstant("jobid", 000000); // job id in cluster $JOB_ID
-    defineConstant("sel1", 0.01); // grid 0-0.2 by 0.01
-    defineConstant("sel2", 0.01); // grid 0-0.2 by 0.01
-    defineConstant("h", 0.5); // 0.5 or 0.25
-    defineConstant("rand_inv", 1);
+    //defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/OD_N1e3/");
+    //defineConstant("d_repID", 1); // 1-10000
+    //defineConstant("d_seed", 31148); // random number $RANDOM
+    //defineConstant("jobid", 000000); // job id in cluster $JOB_ID
+    //defineConstant("sel1", 0.01); // grid 0-0.2 by 0.01
+    //defineConstant("sel2", 0.01); // grid 0-0.2 by 0.01
+    //defineConstant("h", 0.5); // 0.5 or 0.25
+    //defineConstant("rand_inv", 1);
 
-    //setSeed(d_seed);
+    setSeed(d_seed);
     defineConstant("OutputFile", d_folder+"output_s"+sel1+"-"+sel2+"_h"+h+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+ ".OD_N1e3.txt");
     defineConstant("SimEND", 400000);
 	 defineConstant("SimOUT", c(4000,40000,400000));
