@@ -193,6 +193,10 @@ initialize() {
       }//if mut_freq!=1
     }//if size(sim_mutations>0)
     else{ // if there are zero mutations (means mutation was lost), end simulations and write output
+      if(sim.getValue("bls")=="NA"){ // if mutation was still under positive selection (ie balancing selection has not started before mut was lost)
+        newoutput=c(output, "NA"); // cycle when balancing selection started will be NA
+        defineGlobal("output", newoutput);
+      }
       rest_records = sum(SimOUT-sim.cycle>0); // how many steps of SimSTEP cycles are missing to get to the end of the simulation
       newoutput=c(output, rep("0", rest_records)); //fill in output vector with zeroes
       defineGlobal("output", newoutput);
