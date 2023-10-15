@@ -1,4 +1,4 @@
-// Last modified by Debora Brandt 13 Oct 2023
+// Last modified by Debora Brandt 15 Oct 2023
 
 //To run:
 //slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d t1=$t1 -d t2=$t2 -d h=$h -d d_folder="'$OUTDIR'/" -d rand_inv=1 AP_N1e3.slim
@@ -196,12 +196,16 @@ initialize() {
       } //if mut_freq !=1
     } // if size(sim_mutations>0)
     else{ // if there are zero mutations, end simulations and write output
-       rest_records = sum(SimOUT-sim.cycle>0); // how many steps of SimOUT cycles are missing to get to the end of the simulation
-       newoutput=c(output, rep("0", rest_records)); //fill in output vector with zeroes
-       defineGlobal("output", newoutput);
-       writeFile(OutputFile, paste(c(output, sim.cycle, "NA", sim.getValue("maxfreq"), sim.getValue("invading_allele")), sep=","), append=T);
-       print("ENDSIM with lost mut at cycle " + sim.cycle);
-       print("time at ENDSIM: " + (clock() - starttime));
-       sim.simulationFinished(); // finish this simulation
+      if(sim.getValue("bls")=="NA"){ // if mutation was still under positive selection (ie balancing selection has not started before mut was lost)
+        newoutput=c(output, "NA"); // cycle when balancing selection started will be NA
+        defineGlobal("output", newoutput);
+      }
+      rest_records = sum(SimOUT-sim.cycle>0); // how many steps of SimOUT cycles are missing to get to the end of the simulation
+      newoutput=c(output, rep("0", rest_records)); //fill in output vector with zeroes
+      defineGlobal("output", newoutput);
+      writeFile(OutputFile, paste(c(output, sim.cycle, "NA", sim.getValue("maxfreq"), sim.getValue("invading_allele")), sep=","), append=T);
+      print("ENDSIM with lost mut at cycle " + sim.cycle);
+      print("time at ENDSIM: " + (clock() - starttime));
+      sim.simulationFinished(); // finish this simulation
     }
 }
