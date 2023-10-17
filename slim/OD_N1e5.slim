@@ -1,7 +1,7 @@
 // Last modified by Debora Brandt 14 oct 2023
 
 //To run:
-//slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sel1=$s1 -d sel2=$s2 -d h=$h -d d_folder="'$OUTDIR'/" -d rand_inv=1 OD_N1e5.slim
+//slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sel1=$s1 -d sel2=$s2 -d d_folder="'$OUTDIR'/" -d rand_inv=1 OD_N1e5.slim
 
 ///////////////////////////////////////////////////////////////
 
@@ -37,7 +37,7 @@ initialize() {
     //defineConstant("rand_inv", 1);
 
     setSeed(d_seed);
-    defineConstant("OutputFile", d_folder+"output_s"+sel1+"-"+sel2+"_h"+h+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+ ".OD_N1e5.txt");
+    defineConstant("OutputFile", d_folder+"output_s"+sel1+"-"+sel2+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+ ".OD_N1e5.txt");
     defineConstant("SimEND", 400000);
 	 defineConstant("SimOUT", c(4000,40000,400000));
     defineConstant("starttime", clock());
@@ -87,7 +87,7 @@ initialize() {
     }//for mut
     // Start creating output
     writeFile(OutputFile, "sel1,sel2,h,bls_start,4000,40000,400000,lost,fixed,maxfreq,newmut" , append=F);
-    defineGlobal("output", c(sel1,sel2,h));
+    defineGlobal("output", c(sel1,sel2,"NA"));
     print("sel1 "+sel1);
     print("sel2 "+sel2);
     pstar = sel1 / (sel1+sel2);
@@ -122,11 +122,11 @@ initialize() {
           newoutput=output;
           defineGlobal("output", c(newoutput, mut_freq));
           //save tree sequence at this timepoint as well
-          sim.treeSeqOutput(d_folder+"output_s"+sel1+"-"+sel2+"_h"+h+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
+          sim.treeSeqOutput(d_folder+"output_s"+sel1+"-"+sel2+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
         }
         if(sim.cycle == SimEND){ //if this is the last generation we're simulating, write outputs and end simulation
           writeFile(OutputFile, paste(c(output, "NA", "NA", sim.getValue("maxfreq"), sim.getValue("invading_allele")), sep=","), append=T);
-          sim.treeSeqOutput(d_folder+"output_s"+sel1+"-"+sel2+"_h"+h+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
+          sim.treeSeqOutput(d_folder+"output_s"+sel1+"-"+sel2+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
           print("time at ENDSIM: " + (clock() - starttime));
           print("ENDSIM Reached the end of simulation at " +sim.cycle+" with mutation at freq="+mut_freq);
           sim.simulationFinished(); // finish this simulation
