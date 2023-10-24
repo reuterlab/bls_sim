@@ -1,4 +1,4 @@
-// Last modified by Debora Brandt 15 Oct 2023
+// Last modified by Debora Brandt 24 Oct 2023
 
 //To run:
 //slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d t1=$t1 -d t2=$t2 -d h=$h -d d_folder="'$OUTDIR'/" -d rand_inv=1 AP_N1e3.slim
@@ -150,6 +150,14 @@ initialize() {
           	newoutput=output;
             defineGlobal("output", c(newoutput, sim.cycle));
             print("STARTING AP at cycle "+sim.cycle);
+        	   if (rand_inv){ // if we're randomly deciding which one is the invading allele
+              invading_allele = sample(1:2, 1); //randomly sample A1 or A2 as the invading allele
+              sim.setValue("invading_allele", invading_allele);
+            } //if randomize invading
+          	else { // otherwise, allele A2 is always the invading one
+              invading_allele = 2; //randomly sample A1 or A2 as the invading allele
+              sim.setValue("invading_allele", invading_allele);          	
+		      } //not randomizing
           }
         }
         // if the mutation is under balancing selection
@@ -158,37 +166,24 @@ initialize() {
       	 	for (pop in sim.subpopulations) {
         			for (ind in pop.individuals) {
           			num_copies = sum(ind.genomes.containsMutations(mut));
-          			if (rand_inv){ // if we're randomly deciding which ine is the invading allele
-             			invading_allele = sample(1:2, 1); //randomly sample 0 or 1
-             			sim.setValue("invading_allele", invading_allele);
-             			if (invading_allele == 2){ // 50% of the time A2 is invading
-	            			if (num_copies == 0) { // if this indiv is homoz A1 their fitness will be:
-   	           			ind.tagF = (1.0 - t2);
-      	      			} else if (num_copies == 1) { // if this indiv is heterozygote A1A2, their fitness will be:
-         	     			ind.tagF = (1.0 - t1*h) * (1.0 - t2*h);
-         	   			} else if (num_copies == 2) { // if this indiv is homozygote A2A2, their fitness will be:
-            	 			ind.tagF = (1.0 - t1);
-          	   			} 
-          	 			}
-		          	 	if (invading_allele == 1) { // the other 50% of the time A1 is invading (note swapped t1 and t2)
-	            			if (num_copies == 0) { // if this indiv is homoz A2 their fitness will be:
-   	           			ind.tagF = (1.0 - t1);
-      	      			} else if (num_copies == 1) { // if this indiv is heterozygote A1A2, their fitness will be:
-         	     			ind.tagF = (1.0 - t1*h) * (1.0 - t2*h);
-         	   			} else if (num_copies == 2) { // if this indiv is homozygote A1A1, their fitness will be:
-            	  			ind.tagF = (1.0 - t2);
-          	   			} 
-          	 			}
-          			} // if randomize indivs
-          			else { // otherwise, allele A2 is always the invading one
-	         			if (num_copies == 0) { // if this indiv is homoz A1 their fitness will be:
-   	         		ind.tagF = (1.0 - t2);
-      	    			} else if (num_copies == 1) { // if this indiv is heterozygote A1A2, their fitness will be:
-         	    		ind.tagF = (1.0 - t1*h) * (1.0 - t2*h);
-         	 			} else if (num_copies == 2) { // if this indiv is homozygote A2A2, their fitness will be:
-            	 		ind.tagF = (1.0 - t1);
-          	 			}
-          			} // not randomizing 
+                  if (sim.getValue("invading_allele") == 2){
+	            	  if (num_copies == 0) { // if this indiv is homoz A1 their fitness will be:
+                      ind.tagF = (1.0 - t2);
+                    } else if (num_copies == 1) { // if this indiv is heterozygote A1A2, their fitness will be:
+                      ind.tagF = (1.0 - t1*h) * (1.0 - t2*h);
+         	   	  } else if (num_copies == 2) { // if this indiv is homozygote A2A2, their fitness will be:
+            	       ind.tagF = (1.0 - t1);
+          	   	  } 
+          	 		}
+		          	if (sim.getValue("invading_allele") == 1) {
+	            	  if (num_copies == 0) { // if this indiv is homoz A2 their fitness will be:
+   	           	    ind.tagF = (1.0 - t1);
+      	      	  } else if (num_copies == 1) { // if this indiv is heterozygote A1A2, their fitness will be:
+         	          ind.tagF = (1.0 - t1*h) * (1.0 - t2*h);
+         	   	  } else if (num_copies == 2) { // if this indiv is homozygote A1A1, their fitness will be:
+            	  	    ind.tagF = (1.0 - t2);
+          	   	  } 
+          	 		}
         			} // for ind
       		} //for pop
     		} // for mut
