@@ -1,4 +1,4 @@
-// Last modified by Debora Brandt 15 Oct 2023
+// Last modified by Debora Brandt 24 Oct 2023
 
 //To run:
 //slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sf=$sf -d sm=$sm -d h=$h -d d_folder="'$OUTDIR'/" -d rand_inv=1 SA_N1e4.slim
@@ -153,6 +153,14 @@ initialize() {
           	  newoutput=output;
               defineGlobal("output", c(newoutput, sim.cycle));
               print("STARTING SA at cycle "+sim.cycle);
+              if (rand_inv){ // if we're randomly deciding which one is the invading allele
+                invading_allele = sample(1:2, 1); //randomly sample A1 or A2 as the invading allele
+                sim.setValue("invading_allele", invading_allele);
+              } //if randomize invading
+          	  else { // otherwise, allele A2 is always the invading one
+                invading_allele = 2; //randomly sample A1 or A2 as the invading allele
+                sim.setValue("invading_allele", invading_allele);          	
+		        } //not randomizing
             }
           }
           // if the mutation is under balancing selection
@@ -161,15 +169,7 @@ initialize() {
               for (pop in sim.subpopulations) {
                 for (ind in pop.individuals) {
                   num_copies = sum(ind.genomes.containsMutations(mut));
-                  if (rand_inv){ // if we're randomly deciding which one is the invading allele
-             	     invading_allele = sample(1:2, 1); //randomly sample male of female beneficial as the invading allele. Following ms, A1 is female beneficial, A2 is male beneficial
-             		  sim.setValue("invading_allele", invading_allele);
-             		}                  
-             		else { //otherwise, A2 is always invading
-                    invadin_allele = 2;
-                    sim.setValue("invading_allele", invadin_allele);
-                  }
-             		if (invading_allele == 2){ // 50% of the time A2 (male-beneficial) allele is invading
+                  if (sim.getValue("invading_allele") == 2){
              		  if (ind.sex == "F") { //in females:
                       if (num_copies == 2) { //  A2A2 females
                         ind.tagF = 1.0 - sf;
@@ -188,7 +188,7 @@ initialize() {
                       }  
                     } // if males
                   } //if 2 is invading
-             		if (invading_allele == 1){ // 50% of the time A1 (female-beneficial) allele is invading
+             		if (sim.getValue("invading_allele") == 1){ 
              		  if (ind.sex == "F") { //in females:
                       if (num_copies == 0) { //  A2A2 females
                         ind.tagF = 1.0 - sf;

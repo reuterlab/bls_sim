@@ -1,4 +1,4 @@
-// Last modified by Debora Brandt 15 Oct 2023
+// Last modified by Debora Brandt 24 Oct 2023
 
 //To run:
 //slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sf=$sf -d sm=$sm -d h=$h -d d_folder="'$OUTDIR'/" -d rand_inv=1 SA_N1e3.slim
@@ -27,16 +27,16 @@ survival() {
 
 initialize() {
     // command line params
-    defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/SA_N1e3/");
-    defineConstant("d_repID", 1); //1-10000
-    defineConstant("d_seed", 1); // random number $RANDOM
-    defineConstant("jobid", 1); //job id in cluster $JOB_ID
-    defineConstant("sf",0.1); // grid 0-0.2 by 0.01
-    defineConstant("sm",0.1); // grid 0-0.2 by 0.01
-    defineConstant("h",0.5); //0.5 or 0.25
-    defineConstant("rand_inv", 1); //randomize invading allele?
+//    defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/SA_N1e3/");
+//    defineConstant("d_repID", 1); //1-10000
+//    defineConstant("d_seed", 1); // random number $RANDOM
+//    defineConstant("jobid", 1); //job id in cluster $JOB_ID
+//    defineConstant("sf",0.1); // grid 0-0.2 by 0.01
+//    defineConstant("sm",0.1); // grid 0-0.2 by 0.01
+//    defineConstant("h",0.25); //0.5 or 0.25
+//    defineConstant("rand_inv", 1); //randomize invading allele?
 
-    //setSeed(d_seed); 
+    setSeed(d_seed); 
     defineConstant("OutputFile", d_folder+"output_sfm"+sf+"-"+sm+"_h"+h+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+ ".SA_N1e3.txt");
     defineConstant("SimEND", 400000);
     defineConstant("SimOUT", c(4000,40000,400000));
@@ -153,6 +153,14 @@ initialize() {
           	  newoutput=output;
               defineGlobal("output", c(newoutput, sim.cycle));
               print("STARTING SA at cycle "+sim.cycle);
+        	     if (rand_inv){ // if we're randomly deciding which one is the invading allele
+                invading_allele = sample(1:2, 1); //randomly sample A1 or A2 as the invading allele
+                sim.setValue("invading_allele", invading_allele);
+              } //if randomize invading
+          	  else { // otherwise, allele A2 is always the invading one
+                invading_allele = 2; //randomly sample A1 or A2 as the invading allele
+                sim.setValue("invading_allele", invading_allele);          	
+		        } //not randomizing
             }
           }
           // if the mutation is under balancing selection
@@ -161,15 +169,7 @@ initialize() {
               for (pop in sim.subpopulations) {
                 for (ind in pop.individuals) {
                   num_copies = sum(ind.genomes.containsMutations(mut));
-                  if (rand_inv){ // if we're randomly deciding which one is the invading allele
-             	     invading_allele = sample(1:2, 1); //randomly sample male of female beneficial as the invading allele. Following ms, A1 is female beneficial, A2 is male beneficial
-             		  sim.setValue("invading_allele", invading_allele);
-             		}                  
-             		else { //otherwise, A2 is always invading
-                    invadin_allele = 2;
-                    sim.setValue("invading_allele", invadin_allele);
-                  }
-             		if (invading_allele == 2){ // 50% of the time A2 (male-beneficial) allele is invading
+                  if (sim.getValue("invading_allele") == 2){
              		  if (ind.sex == "F") { //in females:
                       if (num_copies == 2) { //  A2A2 females
                         ind.tagF = 1.0 - sf;
@@ -183,12 +183,12 @@ initialize() {
                         ind.tagF = 1.0;
                       } else if (num_copies == 1) { // A1A2 males
                         ind.tagF = 1.0 - sm * h;
-                      } else if (num_copies == 0) { // A1A2 males
+                      } else if (num_copies == 0) { // A1A1 males
                         ind.tagF = 1.0 - sm;
                       }  
                     } // if males
                   } //if 2 is invading
-             		if (invading_allele == 1){ // 50% of the time A1 (female-beneficial) allele is invading
+             		if (sim.getValue("invading_allele") == 1){
              		  if (ind.sex == "F") { //in females:
                       if (num_copies == 0) { //  A2A2 females
                         ind.tagF = 1.0 - sf;
@@ -202,7 +202,7 @@ initialize() {
                        ind.tagF = 1.0;
                       } else if (num_copies == 1) { // A1A2 males
                         ind.tagF = 1.0 - sm * h;
-                      } else if (num_copies == 2) { // A1A2 males
+                      } else if (num_copies == 2) { // A1A1 males
                         ind.tagF = 1.0 - sm;
                       }  
                     } // if males
@@ -214,10 +214,6 @@ initialize() {
         }  //if mut_freq!=1
       } //if size(sim_mutations>0)
       else{ // if there are zero mutations
-        if(sim.getValue("bls")=="NA"){ // if mutation was still under positive selection (ie balancing selection has not started before mut was lost)
-          newoutput=c(output, "NA"); // cycle when balancing selection started will be NA
-          defineGlobal("output", newoutput);
-        }
         rest_records = sum(SimOUT-sim.cycle>0); // how many SimOUT checkpoints are missing to get to the end of the simulation
         newoutput=c(output, rep("0", rest_records)); //fill in output vector with zeroes
         defineGlobal("output", newoutput);
