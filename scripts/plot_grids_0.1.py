@@ -29,16 +29,16 @@ for file in files:
         next(f) # skip header line
         line = f.readline().strip().split(',')
         if line[0]: # if file has more than header
-            # columns: t1,t2,h,4000,40000,400000,lost,fixed,maxfreq
+            # columns: s1,s2,h,bls_start,4000,40000,400000,lost,fixed,maxfreq,invading_allele
             t1 = int((round(float(line[0])-0.1, 2)) * 10)
             t2 = int((round(float(line[1])-0.1, 2)) * 10)
             h = float(line[2])
-            f4k = float(line[3])
-            f40k = float(line[4])
-            f400k = float(line[5])
-            tlost = line[6]
-            tfixed = line[7]
-            maxfreq = line[8]
+            f4k = float(line[4])
+            f40k = float(line[5])
+            f400k = float(line[6])
+            tlost = line[7]
+            tfixed = line[8]
+            maxfreq = line[9]
             if h==0.5:
                 tgrid4k_h50[t1,t2] += f4k>0
                 tgrid40k_h50[t1,t2] += f40k>0

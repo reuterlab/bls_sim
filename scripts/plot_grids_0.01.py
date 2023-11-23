@@ -39,17 +39,17 @@ for file in files:
         next(f) # skip header line
         line = f.readline().strip().split(',')
         if line[0]: # if file has more than header
-            # columns: t1,t2,h,4000,40000,400000,lost,fixed,maxfreq
+            # columns: s1,s2,h,bls_start,4000,40000,400000,lost,fixed,maxfreq,invading_allele
             t1 = int((round(float(line[0]) - 0.01, 2)) * 100)
             t2 = int((round(float(line[1]) - 0.01, 2)) * 100)
-            h = float(line[2])
-            f4k = float(line[3])
-            f40k = float(line[4])
-            f400k = float(line[5])
-            tlost = line[6]
-            tfixed = line[7]
-            maxfreq = float(line[8])
-            if h==0.5:
+            h = line[2]
+            f4k = float(line[4])
+            f40k = float(line[5])
+            f400k = float(line[6])
+            tlost = line[7]
+            tfixed = line[8]
+            maxfreq = float(line[9])
+            if h=="NA": #for overdominance
                 tgrid4k_h50[t1,t2]   += f4k>0   and f4k <1
                 tgrid40k_h50[t1,t2]  += f40k>0  and f40k <1
                 tgrid400k_h50[t1,t2] += f400k>0 and f400k <1
@@ -61,7 +61,21 @@ for file in files:
                 if tfixed != "NA":
                     nfix_h50[t1,t2] += 1
                     meantfix_h50[t1,t2] += float(tfixed)
-            if h==0.25:
+            if h=="0.5" :
+                h = float(h)
+                tgrid4k_h50[t1,t2]   += f4k>0   and f4k <1
+                tgrid40k_h50[t1,t2]  += f40k>0  and f40k <1
+                tgrid400k_h50[t1,t2] += f400k>0 and f400k <1
+                tot_h50[t1,t2] += 1
+                meanmaxfreq_h50[t1,t2] += maxfreq
+                if tlost != "NA":
+                    nlost_h50[t1,t2] += 1
+                    meantlost_h50[t1,t2] += float(tlost)
+                if tfixed != "NA":
+                    nfix_h50[t1,t2] += 1
+                    meantfix_h50[t1,t2] += float(tfixed)
+            if h=="0.25":
+                h = float(h)
                 tgrid4k_h25[t1,t2]   += f4k>0   and f4k <1
                 tgrid40k_h25[t1,t2]  += f40k>0  and f40k <1
                 tgrid400k_h25[t1,t2] += f400k>0 and f400k <1
@@ -84,8 +98,8 @@ meantfix_h25 = meantfix_h25/nfix_h25
 plt.figure()
 ax = sns.heatmap(tot_h25, linewidth=0.5,
         cbar_kws={'label': 'Number of simulations processed'},
-                 xticklabels=[float(i/100) for i in range(10)],
-                 yticklabels=[float(i/100) for i in range(10)])
+                 xticklabels=[float((i+1)/100) for i in range(10)],
+                 yticklabels=[float((i+1)/100) for i in range(10)])
 ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 #plt.show()
