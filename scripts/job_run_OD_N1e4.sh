@@ -28,7 +28,7 @@ mkdir $OUTDIR
 
 SEED=$(shuf -i 1-999999999 -n 1) # slim seed is a random number in that range. Seed number will be written in the slim output file name
 REP=$SGE_TASK_ID  # replicate number goes from 1 to the number of array jobs requested with the -t flag above
-slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sel1=$s1 -d sel2=$s2 -d d_folder="'$OUTDIR/'" -d rand_inv=1 /SAN/reuterlab/balsel_detection/bls_sim/slim/OD_N1e4.slim
+slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sel1=$s1 -d sel2=$s2 -d d_folder="'$OUTDIR/'" -d rand_inv=$rand_inv /SAN/reuterlab/balsel_detection/bls_sim/slim/OD_N1e4.slim
 # slim is taking the following values from the command line:
 # jobid=$JOB_ID is the scheduler job ID (will be the same for all tasks in this array)
 # d_seed=$SEED is the slim seed that is a random number in the range 1-999999999
@@ -38,4 +38,4 @@ slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sel1=$s1 -d sel2=$s2 -d
 # d_folder is the subfolder where where the outputs of this particular slim simulations will be written to. Output file names in this folder are:
 # - tree sequences: output_s{sel1}-{sel2}_h{h}_r{d_repID}_s{d_seed}_j{jobid}_c{checkpoint}.trees
 # - allele frequency files: output_s{sel1}-{sel2}_h{h}_r{d_repID}_s{d_seed}_j{jobid}.OD_N1e3.txt
-# rand_inv is a parameter that says wether we want to randomize the invading allele (A1 or A2). 1 means YES, randomize
+# rand_inv is a flag indicating whether the invading allele should be chosen randomly (1) or not (0)

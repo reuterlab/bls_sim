@@ -38,4 +38,4 @@ slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sel1=$s1 -d sel2=$s2 -d
 # d_folder is the subfolder where where the outputs of this particular slim simulations will be written to. Output file names in this folder are:
 # - tree sequences: output_s{sel1}-{sel2}_h{h}_r{d_repID}_s{d_seed}_j{jobid}_c{checkpoint}.trees
 # - allele frequency files: output_s{sel1}-{sel2}_h{h}_r{d_repID}_s{d_seed}_j{jobid}.OD_N1e3.txt
-# rand_inv is a parameter that says wether we want to randomize the invading allele (A1 or A2). 1 means YES, randomize
+# rand_inv is a flag indicating whether the invading allele should be chosen randomly (1) or not (0)
