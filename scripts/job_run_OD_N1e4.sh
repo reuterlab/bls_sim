@@ -24,11 +24,13 @@
 
 #The code you want to run now goes here.
 
-mkdir $OUTDIR
+if [ ! -d $OUTDIR ]; then
+	mkdir $OUTDIR
+	fi
 
 SEED=$(shuf -i 1-999999999 -n 1) # slim seed is a random number in that range. Seed number will be written in the slim output file name
 REP=$SGE_TASK_ID  # replicate number goes from 1 to the number of array jobs requested with the -t flag above
-slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sel1=$s1 -d sel2=$s2 -d d_folder="'$OUTDIR/'" -d rand_inv=$rand_inv /SAN/reuterlab/balsel_detection/bls_sim/slim/OD_N1e4.slim
+/share/apps/SLiM-4.0.1/bin/slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sel1=$s1 -d sel2=$s2 -d d_folder="'$OUTDIR/'" -d rand_inv=$rand_inv /SAN/reuterlab/balsel_detection/bls_sim/slim/OD_N1e4.slim
 # slim is taking the following values from the command line:
 # jobid=$JOB_ID is the scheduler job ID (will be the same for all tasks in this array)
 # d_seed=$SEED is the slim seed that is a random number in the range 1-999999999
