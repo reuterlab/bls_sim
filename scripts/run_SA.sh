@@ -8,7 +8,7 @@ for s1 in $(seq 0.01 0.01 0.1); do
             qsub -v s1=$s1,s2=$s2,h=$h,rand_inv=1,OUTDIR='/SAN/reuterlab/balsel_detection/bls_sim/slimout/SA_N1e3_grid0.01/' -t 1-$rep job_run_SA_N1e3.sh
             qsub -v s1=$s1,s2=$s2,h=$h,rand_inv=1,OUTDIR='/SAN/reuterlab/balsel_detection/bls_sim/slimout/SA_N1e4_grid0.01/' -t 1-$rep job_run_SA_N1e4.sh
             qsub -v s1=$s1,s2=$s2,h=$h,rand_inv=1,OUTDIR='/SAN/reuterlab/balsel_detection/bls_sim/slimout/SA_N1e5_grid0.01/' -t 1-$rep job_run_SA_N1e5.sh
-        #done
+        done
     done
 done
 
