@@ -16,7 +16,7 @@ if [ ! -d $OUTDIR ]; then
 
 SEED=$(shuf -i 1-999999999 -n 1)
 REP=$SGE_TASK_ID
-/share/apps/SLiM-4.0.1/bin/slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d t1=$s1 -d t2=$s2 -d h=$h -d d_folder="'$OUTDIR/'" -d rand_inv=$rand_inv /SAN/reuterlab/balsel_detectiin/bls_sim/slim/AP_N1e4.slim
+/share/apps/SLiM-4.0.1/bin/slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d t1=$s1 -d t2=$s2 -d h=$h -d d_folder="'$OUTDIR/'" -d rand_inv=$rand_inv /SAN/reuterlab/balsel_detection/bls_sim/slim/AP_N1e4.slim
 # slim is taking the following values from the command line:
 # jobid=$JOB_ID is the scheduler job ID (will be the same for all tasks in this array)
 # d_seed=$SEED is the slim seed that is a random number in the range 1-999999999

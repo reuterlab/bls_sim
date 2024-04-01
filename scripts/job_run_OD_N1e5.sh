@@ -12,7 +12,7 @@
 
 #$ -l tmem=3G
 #$ -l h_vmem=3G
-#$ -l h_rt=72:00:00 
+#$ -l h_rt=800:00:00 
 
 #These are optional flags but you probably want them in all jobs
 

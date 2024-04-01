@@ -118,8 +118,8 @@ meantlost_h50 = meantlost_h50/nlost_h50
 propfix_h50 = nfix_h50/tot_h50
 meantfix_h50 = meantfix_h50/nfix_h50
 tgridprop4k_h50 = tgrid4k_h50/tot_h50
-tgridprop40k_h50 = tgrid4k_h50/tot_h50
-tgridprop400k_h50 = tgrid4k_h50/tot_h50
+tgridprop40k_h50 = tgrid40k_h50/tot_h50
+tgridprop400k_h50 = tgrid400k_h50/tot_h50
 meanmaxfreq_h50 = meanmaxfreq_h50/tot_h50
 
 
@@ -130,8 +130,8 @@ meanmaxfreq_h50 = meanmaxfreq_h50/tot_h50
 plt.figure()
 ax = sns.heatmap(tot_h50, linewidth=0.5,
         cbar_kws={'label': 'Number of simulations processed'},
-                 xticklabels=[float(i/100) for i in range(10)],
-                 yticklabels=[float(i/100) for i in range(10)])
+                 xticklabels=[float((i+1)/100) for i in range(10)],
+                 yticklabels=[float((i+1)/100) for i in range(10)])
 ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 #plt.show()
@@ -142,8 +142,8 @@ plt.savefig(outdir+"h50_nsim.png")
 plt.figure()
 ax = sns.heatmap(proplost_h50, linewidth=0.5,
         cbar_kws={'label': 'Proportion of simulations with lost mutation'},
-                 xticklabels=[float(i/100) for i in range(10)],
-                 yticklabels=[float(i/100) for i in range(10)])
+                 xticklabels=[float((i+1)/100) for i in range(10)],
+                 yticklabels=[float((i+1)/100) for i in range(10)])
 ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 ax.set_title('Proportion of losses')
@@ -153,8 +153,8 @@ plt.savefig(outdir+"h50_proplost.png")
 plt.figure()
 ax = sns.heatmap(meantlost_h50, linewidth=0.5,
         cbar_kws={'label': 'Mean time to loss of invading mutation'},
-                 xticklabels=[float(i/100) for i in range(10)],
-                 yticklabels=[float(i/100) for i in range(10)])
+                 xticklabels=[float((i+1)/100) for i in range(10)],
+                 yticklabels=[float((i+1)/100) for i in range(10)])
 ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 ax.set_title('Mean time to loss')
@@ -166,8 +166,8 @@ plt.savefig(outdir+"h50_meantlost.png")
 plt.figure()
 ax = sns.heatmap(propfix_h50, linewidth=0.5,
         cbar_kws={'label': 'Proportion of simulations with fixed mutation'},
-                 xticklabels=[float(i/100) for i in range(10)],
-                 yticklabels=[float(i/100) for i in range(10)])
+                 xticklabels=[float((i+1)/100) for i in range(10)],
+                 yticklabels=[float((i+1)/100) for i in range(10)])
 ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 ax.set_title('Proportion of fixations')
@@ -177,8 +177,8 @@ plt.savefig(outdir+"h50_propfix.png")
 plt.figure()
 ax = sns.heatmap(meantfix_h50, linewidth=0.5,
         cbar_kws={'label': 'Mean time to fixation of invading mutation'},
-                 xticklabels=[float(i/100) for i in range(10)],
-                 yticklabels=[float(i/100) for i in range(10)])
+                 xticklabels=[float((i+1)/100) for i in range(10)],
+                 yticklabels=[float((i+1)/100) for i in range(10)])
 ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 ax.set_title('Mean time to fixation')
@@ -190,8 +190,8 @@ plt.savefig(outdir+"h50_meantfix.png")
 plt.figure()
 ax = sns.heatmap(tgridprop4k_h50, linewidth=0.5,
         cbar_kws={'label': 'Proportion of simulations with polymorphism'},
-                 xticklabels=[float(i/100) for i in range(10)],
-                 yticklabels=[float(i/100) for i in range(10)])
+                 xticklabels=[float((i+1)/100) for i in range(10)],
+                 yticklabels=[float((i+1)/100) for i in range(10)])
 ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 ax.set_title('4000 generations')
@@ -201,8 +201,8 @@ plt.savefig(outdir+"h50_t4kproppoly.png")
 plt.figure()
 ax = sns.heatmap(tgridprop40k_h50, linewidth=0.5,
         cbar_kws={'label': 'Proportion of simulations with polymorphism'},
-                 xticklabels=[float(i/100) for i in range(10)],
-                 yticklabels=[float(i/100) for i in range(10)])
+                 xticklabels=[float((i+1)/100) for i in range(10)],
+                 yticklabels=[float((i+1)/100) for i in range(10)])
 ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 ax.set_title('40000 generations')
@@ -212,8 +212,8 @@ plt.savefig(outdir+"h50_t40kproppoly.png")
 plt.figure()
 ax = sns.heatmap(tgridprop400k_h50, linewidth=0.5,
         cbar_kws={'label': 'Proportion of simulations with polymorphism'},
-                 xticklabels=[float(i/100) for i in range(10)],
-                 yticklabels=[float(i/100) for i in range(10)])
+                 xticklabels=[float((i+1)/100) for i in range(10)],
+                 yticklabels=[float((i+1)/100) for i in range(10)])
 ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 ax.set_title('400000 generations')
@@ -223,8 +223,8 @@ plt.savefig(outdir+"h50_t400kproppoly.png")
 plt.figure()
 ax = sns.heatmap(meanmaxfreq_h50, linewidth=0.5,
         cbar_kws={'label': 'Mean max frequency reached by invading mutation'},
-                 xticklabels=[float(i/100) for i in range(10)],
-                 yticklabels=[float(i/100) for i in range(10)])
+                 xticklabels=[float((i+1)/100) for i in range(10)],
+                 yticklabels=[float((i+1)/100) for i in range(10)])
 ax.invert_yaxis()
 ax.set(xlabel='t2', ylabel='t1')
 ax.set_title('Mean max freq')
@@ -257,8 +257,8 @@ if not OD_flag:
     plt.figure()
     ax = sns.heatmap(tot_h25, linewidth=0.5,
             cbar_kws={'label': 'Number of simulations processed'},
-                     xticklabels=[float(i/100) for i in range(10)],
-                     yticklabels=[float(i/100) for i in range(10)])
+                     xticklabels=[float((i+1)/100) for i in range(10)],
+                     yticklabels=[float((i+1)/100) for i in range(10)])
     ax.invert_yaxis()
     ax.set(xlabel='t2', ylabel='t1')
     #plt.show()
@@ -269,8 +269,8 @@ if not OD_flag:
     plt.figure()
     ax = sns.heatmap(proplost_h25, linewidth=0.5,
             cbar_kws={'label': 'Proportion of simulations with lost mutation'},
-                     xticklabels=[float(i/100) for i in range(10)],
-                     yticklabels=[float(i/100) for i in range(10)])
+                     xticklabels=[float((i+1)/100) for i in range(10)],
+                     yticklabels=[float((i+1)/100) for i in range(10)])
     ax.invert_yaxis()
     ax.set(xlabel='t2', ylabel='t1')
     ax.set_title('Proportion of losses')
@@ -280,8 +280,8 @@ if not OD_flag:
     plt.figure()
     ax = sns.heatmap(meantlost_h25, linewidth=0.5,
             cbar_kws={'label': 'Mean time to loss of invading mutation'},
-                     xticklabels=[float(i/100) for i in range(10)],
-                     yticklabels=[float(i/100) for i in range(10)])
+                     xticklabels=[float((i+1)/100) for i in range(10)],
+                     yticklabels=[float((i+1)/100) for i in range(10)])
     ax.invert_yaxis()
     ax.set(xlabel='t2', ylabel='t1')
     ax.set_title('Mean time to loss')
@@ -293,8 +293,8 @@ if not OD_flag:
     plt.figure()
     ax = sns.heatmap(propfix_h25, linewidth=0.5,
             cbar_kws={'label': 'Proportion of simulations with fixed mutation'},
-                     xticklabels=[float(i/100) for i in range(10)],
-                     yticklabels=[float(i/100) for i in range(10)])
+                     xticklabels=[float((i+1)/100) for i in range(10)],
+                     yticklabels=[float((i+1)/100) for i in range(10)])
     ax.invert_yaxis()
     ax.set(xlabel='t2', ylabel='t1')
     ax.set_title('Proportion of fixations')
@@ -304,8 +304,8 @@ if not OD_flag:
     plt.figure()
     ax = sns.heatmap(meantfix_h25, linewidth=0.5,
             cbar_kws={'label': 'Mean time to fixation of invading mutation'},
-                     xticklabels=[float(i/100) for i in range(10)],
-                     yticklabels=[float(i/100) for i in range(10)])
+                     xticklabels=[float((i+1)/100) for i in range(10)],
+                     yticklabels=[float((i+1)/100) for i in range(10)])
     ax.invert_yaxis()
     ax.set(xlabel='t2', ylabel='t1')
     ax.set_title('Mean time to fixation')
@@ -317,8 +317,8 @@ if not OD_flag:
     plt.figure()
     ax = sns.heatmap(tgridprop4k_h25, linewidth=0.5,
             cbar_kws={'label': 'Proportion of simulations with polymorphism'},
-                     xticklabels=[float(i/100) for i in range(10)],
-                     yticklabels=[float(i/100) for i in range(10)])
+                     xticklabels=[float((i+1)/100) for i in range(10)],
+                     yticklabels=[float((i+1)/100) for i in range(10)])
     ax.invert_yaxis()
     ax.set(xlabel='t2', ylabel='t1')
     ax.set_title('4000 generations')
@@ -328,8 +328,8 @@ if not OD_flag:
     plt.figure()
     ax = sns.heatmap(tgridprop40k_h25, linewidth=0.5,
             cbar_kws={'label': 'Proportion of simulations with polymorphism'},
-                     xticklabels=[float(i/100) for i in range(10)],
-                     yticklabels=[float(i/100) for i in range(10)])
+                     xticklabels=[float((i+1)/100) for i in range(10)],
+                     yticklabels=[float((i+1)/100) for i in range(10)])
     ax.invert_yaxis()
     ax.set(xlabel='t2', ylabel='t1')
     ax.set_title('40000 generations')
@@ -339,8 +339,8 @@ if not OD_flag:
     plt.figure()
     ax = sns.heatmap(tgridprop400k_h25, linewidth=0.5,
             cbar_kws={'label': 'Proportion of simulations with polymorphism'},
-                     xticklabels=[float(i/100) for i in range(10)],
-                     yticklabels=[float(i/100) for i in range(10)])
+                     xticklabels=[float((i+1)/100) for i in range(10)],
+                     yticklabels=[float((i+1)/100) for i in range(10)])
     ax.invert_yaxis()
     ax.set(xlabel='t2', ylabel='t1')
     ax.set_title('400000 generations')
@@ -350,8 +350,8 @@ if not OD_flag:
     plt.figure()
     ax = sns.heatmap(meanmaxfreq_h25, linewidth=0.5,
             cbar_kws={'label': 'Mean max frequency reached by invading mutation'},
-                     xticklabels=[float(i/100) for i in range(10)],
-                     yticklabels=[float(i/100) for i in range(10)])
+                     xticklabels=[float((i+1)/100) for i in range(10)],
+                     yticklabels=[float((i+1)/100) for i in range(10)])
     ax.invert_yaxis()
     ax.set(xlabel='t2', ylabel='t1')
     ax.set_title('Mean max freq')
