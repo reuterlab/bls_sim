@@ -1,4 +1,4 @@
-// Last modified by Debora Brandt 24 oct 2023
+// Last modified by Debora Brandt 11 mar 2024
 
 //To run:
 //slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sel1=$s1 -d sel2=$s2 -d d_folder="'$OUTDIR'/" -d rand_inv=1 OD_N1e4.slim
@@ -107,7 +107,7 @@ initialize() {
         }
       }
       if(mut_freq==1){ // if mutation was fixed
-        rest_records = sum(SimOUT-sim.cycle>0); // how many checkpoints(SimOUT) are missing to get to the end of the simulation
+        rest_records = sum(SimOUT-sim.cycle>=0); // how many checkpoints(SimOUT) are missing to get to the end of the simulation
         newoutput=c(output, rep("1", rest_records));
         // write to out file that frequency of mutation is 1 until the end
         defineGlobal("output", newoutput);
@@ -191,7 +191,7 @@ initialize() {
         newoutput=c(output, "NA"); // cycle when balancing selection started will be NA
         defineGlobal("output", newoutput);
       }
-      rest_records = sum(SimOUT-sim.cycle>0); // how many steps of SimSTEP cycles are missing to get to the end of the simulation
+      rest_records = sum(SimOUT-sim.cycle>=0); // how many steps of SimSTEP cycles are missing to get to the end of the simulation
       newoutput=c(output, rep("0", rest_records)); //fill in output vector with zeroes
       defineGlobal("output", newoutput);
       writeFile(OutputFile, paste(c(output, sim.cycle, "NA",sim.getValue("maxfreq"), sim.getValue("invading_allele")), sep=","), append=T);
