@@ -1,4 +1,4 @@
-// Last modified by Debora Brandt 11 Mar 2024
+// Last modified by Debora Brandt 1 apr 2024
 
 //To run:
 //slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sf=$sf -d sm=$sm -d h=$h -d d_folder="'$OUTDIR'/" -d rand_inv=1 SA_N1e5.slim
@@ -68,7 +68,7 @@ initialize() {
     sim.setValue("invading_allele", 0); //variable to store which one is the new mutation (A1 or A2)
     g = sim.subpopulations.genomes;
     // add mutation at one random chromosome (frequency=1/2N)
-    g[sample(1:(2*N),1)].addNewMutation(m1, 0.0, 4999, originSubpop=1);
+    g[sample(0:((2*N)-1),1)].addNewMutation(m1, 0.0, 4999, originSubpop=1);
     // POSITIVE SELECTION
     for (mut in sim.mutations){ // start mutation with selection coefficient of -1
     // relative fitness will be calculated below and will be AA=0.5, Aa=0.75, aa=1
