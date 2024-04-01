@@ -68,7 +68,7 @@ initialize() {
     sim.setValue("invading_allele",0);//variable to store which one is the new mutation (invading allele)
     g = sim.subpopulations.genomes;
     // add mutation at one random chromosome (frequency 1/2N)    
-    g[sample(1:(2*N),1)].addNewMutation(m1, 0.0, 4999, originSubpop=1);
+    g[sample(0:((2*N)-1),1)].addNewMutation(m1, 0.0, 4999, originSubpop=1);
     for (mut in sim.mutations){ // start mutation with selection coefficient of -1
     // fitness will be calculated below and will be AA=0.5, Aa=0.75, aa=1
         mut.setValue("s", 1);
