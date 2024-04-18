@@ -50,6 +50,7 @@ def tree_heights(ts):
     return sum(heights)/len(heights)
 
 # Recapitate!
+#recap = pyslim.recapitate(ts, ancestral_Ne=int(1000), recombination_rate=0.5e-8)
 recap = pyslim.recapitate(ts, ancestral_Ne=int(args.ne), recombination_rate=0.5e-8) # MAX: updated based on slim scripts
 #recap.dump("../data/"+pref+"_recap.trees")
 recsim = recap.simplify()
@@ -59,7 +60,9 @@ recsim = recap.simplify()
 # print(f"Maximum number of roots before recapitation: {orig_max_roots}\n"
 #       f"After recapitation: {recap_max_roots}")
 # mutation rate map setting mutation rate at site under SA (0-based pos=4999) to zero, so that there is no overlap with neutral mutation
-rates_exclmidsite = msprime.RateMap(position=[0, 4999, 5000, 10000], rate=[1.39e-9, 0, 1.39e-9])
+rates_exclmidsite = msprime.RateMap(position=[0, 4999, 5000, 10000], rate=[1e-7, 0, 1e-7]) #increased this becayse Ne*u was too low for Ne=1000 
+# Ne*u ~ 0.001 in humans, 0.01 in Dmel
+# u=1e-7 -> Ne*u = {1e-4, 1e-3, 1e-2} with Ne = {1e3, 1e4, 1e5}
 mutated = msprime.sim_mutations(recsim, rate=rates_exclmidsite) 
 
 print(f"The tree sequence now has {mutated.num_mutations} mutations,\n"
@@ -68,24 +71,24 @@ print(f"The tree sequence now has {mutated.num_mutations} mutations,\n"
       f"Before, it was {recsim.diversity():0.3e}."
       )
       
-# MAX: removed cycling through populations
-sfs=[]
-nind=[]
-pop=mutated.samples()
-nind.append(len(pop))
-tspop = mutated.simplify(samples=mutated.samples())
+mutsim = mutated.simplify()
 if args.nspl:
-    # subsample individuals from pop
-    indspl = random.sample([x.id for x in tspop.individuals()], k=int(args.nspl))
+    # subsample individuals
+    indspl = random.sample([x.id for x in mutsim.individuals()], k=int(args.nspl))
 else:
-    indspl = [x.id for x in tspop.individuals()]
+    indspl = [x.id for x in mutsim.individuals()]
 if args.vcf:
     # write to VCF file
     samplenames = ["ind_"+str(x) for x in indspl]
     with open(pref+".vcf" , "w") as vcf:
-        tspop.write_vcf(vcf, individuals=indspl, individual_names = samplenames)
-nodespl = list(np.concatenate([tspop.individual(x).nodes for x in indspl]))
-sfspop=tspop.allele_frequency_spectrum(sample_sets=[nodespl], windows=[0,2000,4000,6000,8000,10000], polarised=True, span_normalise=True)
-np.savetxt(pref+"_SFS.csv", sfspop, delimiter=",")
+        mutsim.write_vcf(vcf, individuals=indspl, individual_names = samplenames)
 
-print(tree_heights(tspop))
+#nodespl = list(np.concatenate([mutsim.individual(x).nodes for x in indspl]))
+#sfs=mutsim.allele_frequency_spectrum(sample_sets=[nodespl], polarised=True, span_normalise=False)
+#np.savetxt(pref+"_SFS.csv", sfs, delimiter=",")
+#
+#plt.bar(np.arange(mutsim.num_samples + 1), sfs)
+#plt.title("Polarised allele frequency spectrum")
+#plt.show()
+#
+#print(tree_heights(mutsim))
