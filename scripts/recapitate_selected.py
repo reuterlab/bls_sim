@@ -83,12 +83,12 @@ if args.vcf:
     with open(pref+".vcf" , "w") as vcf:
         mutsim.write_vcf(vcf, individuals=indspl, individual_names = samplenames)
 
-#nodespl = list(np.concatenate([mutsim.individual(x).nodes for x in indspl]))
-#sfs=mutsim.allele_frequency_spectrum(sample_sets=[nodespl], polarised=True, span_normalise=False)
-#np.savetxt(pref+"_SFS.csv", sfs, delimiter=",")
-#
-#plt.bar(np.arange(mutsim.num_samples + 1), sfs)
-#plt.title("Polarised allele frequency spectrum")
-#plt.show()
+nodespl = list(np.concatenate([mutsim.individual(x).nodes for x in indspl]))
+sfs=mutsim.allele_frequency_spectrum(sample_sets=[nodespl], polarised=True, span_normalise=False)
+np.savetxt(pref+"_SFS.csv", sfs, delimiter=",")
+
+plt.bar(np.arange(mutsim.num_samples + 1), sfs)
+plt.title("Polarised allele frequency spectrum")
+plt.show()
 #
 #print(tree_heights(mutsim))
