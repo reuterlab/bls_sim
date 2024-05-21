@@ -56,7 +56,7 @@ def tree_heights(ts):
         children = tree.children(tree.root)
         real_root = tree.root if len(children) > 1 else children[0]
         heights[tree.index] = tree.time(real_root)
-    return sum(heights)/len(heights)
+    return heights
 
 # Recapitate!
 recap = pyslim.recapitate(ts, ancestral_Ne=Ne, recombination_rate=recrate)
@@ -80,6 +80,18 @@ print(f"The tree sequence now has {mutated.num_mutations} mutations,\n"
       )
       
 mutsim = mutated.simplify()
+
+#plot tree height along sequence
+plt.scatter([i for i in range(mutsim.num_trees)],th)
+plt.plot([i for i in range(mutsim.num_trees)],th)
+plt.stairs(th, [i for i in mutsim.breakpoints()])
+plt.show()
+
+# plot mutation ages along sequence
+
+#-----------------------------------------------------
+
+# WRITE VCF
 if args.nspl:
     # subsample individuals
     indspl = random.sample([x.id for x in mutsim.individuals()], k=int(args.nspl))
