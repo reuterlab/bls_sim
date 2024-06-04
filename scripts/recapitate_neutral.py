@@ -27,6 +27,8 @@ parser.add_argument("--ne", help = "effective population size")
 
 args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])
 
+#infile = "../slimout/neutral/output_r1_s31148_j0_c40000.trees"
+#pref = "../vcf/neutral/output_r1_s31148_j0_c40000"
 #infile = "../slimout/neutral/output_r1_s31148_j0_c4000.trees"
 #pref = "../vcf/neutral/output_r1_s31148_j0_c4000"
 

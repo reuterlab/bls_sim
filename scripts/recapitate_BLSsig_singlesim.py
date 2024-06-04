@@ -12,6 +12,7 @@ import tskit as tsk # installed via python3 -m pip install tskit
 import msprime #installed via python3 -m pip install msprime
 import pyslim #installed via python3 -m pip install pyslim
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
 import random
@@ -29,11 +30,16 @@ parser.add_argument("--re", help = "recombination rate")
 
 args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])
 
+#infile = "../slimout/OD_N20k_r1e-6_grid0.01/output_s0.01-0.01_r1_s85005425_j4117742_c80000.trees"
+#pref = "../vcf/OD_N20k_r1e-6_grid0.01/output_s0.01-0.01_r1_s85005425_j4117742_c80000"
+#infile = "../slimout/OD_N20k_r1e-6_grid0.01/output_s0.01-0.01_r1_s85005425_j4117742_c320000.trees"
+#pref = "../vcf/OD_N20k_r1e-6_grid0.01/output_s0.01-0.01_r1_s85005425_j4117742_c320000"
 #infile = "../slimout/OD_N20k_r1e-6_grid0.01/output_s0.01-0.01_r1_s85005425_j4117742_c640000.trees"
 #pref = "../vcf/OD_N20k_r1e-6_grid0.01/output_s0.01-0.01_r1_s85005425_j4117742_c640000"
-#Ne=20000
-#recrate=1e-6
-#mutrate=1e-7
+infile= "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/singer_inferred/ts/output_s0.01-0.01_r1_s161300005_j3200395_c400000_spl100_0.trees"
+Ne=1000
+recrate=1e-9
+mutrate=1e-7
 
 Ne=int(args.ne)
 recrate=float(args.re)
@@ -46,9 +52,6 @@ if args.outpref:
 else:
     pref = infile+"_"
 
-# Load the .trees file
-ts = tsk.load(infile)
-
 # Define function to calculate tree heights, giving uncoalesced sites the maximum time
 def tree_heights(ts):
     heights = np.zeros(ts.num_trees)
@@ -58,6 +61,8 @@ def tree_heights(ts):
         heights[tree.index] = tree.time(real_root)
     return heights
 
+# Load the .trees file
+ts = tsk.load(infile)
 # Recapitate!
 recap = pyslim.recapitate(ts, ancestral_Ne=Ne, recombination_rate=recrate)
 #recap.dump("../data/"+pref+"_recap.trees")
@@ -80,12 +85,29 @@ print(f"The tree sequence now has {mutated.num_mutations} mutations,\n"
       )
       
 mutsim = mutated.simplify()
+breakpoints = [i for i in mutsim.breakpoints()]
+treespans = [x-breakpoints[i] for i,x in enumerate(breakpoints[1:])]
+th=tree_heights(mutsim)
+
+plt.hist(th)
+plt.show()
+np.mean(th)
+len(th)
+
+plt.hist(treespans)
+plt.show()
+max(treespans)
+len(treespans)
+
+beforei=max([i for i,x in enumerate(breakpoints) if x <4999])
+afteri=min([i for i,x in enumerate(breakpoints) if x >4999])
 
 #plot tree height along sequence
-plt.scatter([i for i in range(mutsim.num_trees)],th)
-plt.plot([i for i in range(mutsim.num_trees)],th)
-plt.stairs(th, [i for i in mutsim.breakpoints()])
+plt.stairs(th[(beforei-100):(beforei+101)], breakpoints[(beforei-100):(beforei+102)])
+plt.title("Ne="+str(Ne)+" mu="+str(mutrate)+" r="+str(recrate))
 plt.show()
+plt.savefig(infile+"_TMRCA.png")
+plt.close()
 
 # plot mutation ages along sequence
 
