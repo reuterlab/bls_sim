@@ -66,6 +66,7 @@ for rep in range(100):
     recmut.append(0)
     rep=rep+1
     #inpref="../slimout/OD_N20k_r1e-6_grid0.01/output_s0.01-0.01_r"+str(rep)+"_*_c640000.trees"
+    #inpref="../slimout/OD_N20k_r1e-7_grid0.01/output_s0.01-0.01_r"+str(rep)+"_*_c640000.trees"
     inpref="../slimout/OD_N20k_r1e-7_grid0.01/output_s0.01-0.01_r"+str(rep)+"_*_c640000.trees"
     infile=glob.glob(inpref)
     if not infile: # mutation did not segregate till this generation so the trees file was not generated for this replicate
