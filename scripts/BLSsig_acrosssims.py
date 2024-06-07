@@ -147,78 +147,82 @@ for rep in range(100):
 
 # some checks/visualizations:
 
-# plot all points (5kb around BLS site)
-
-plt.scatter([x[0] for x in ages], [x[1] for x in ages],
-        alpha=0.1)
-plt.xlabel("Basepairs from BLS site")
-plt.ylabel("Allele age")
-plt.title("Ne="+str(Ne)+" mu="+str(mutrate)+" r="+str(recrate)+" Simulated="+str(simulated))
-plt.savefig(inoutpath+"output_s0.01-0.01_c640000_age.png")
-plt.close()
-plt.show()
-
-#https://stackoverflow.com/questions/20105364/how-can-i-make-a-scatter-plot-colored-by-density
+# datashader for plotting density of points in scatter plot grid
+# based on https://stackoverflow.com/questions/20105364/how-can-i-make-a-scatter-plot-colored-by-density
 import datashader as ds
 from datashader.mpl_ext import dsshow
+
+# plot all points (5kb around BLS site)
 toplot = pd.DataFrame(ages, columns=["Distance","Age","Rep"])
 fig,ax=plt.subplots()
 dsartist = dsshow( toplot, ds.Point("Distance", "Age"),
-        ds.count(), plot_width=50, plot_height=50, aspect="auto", ax=ax)
+        ds.count(), plot_width=50, plot_height=50, aspect="auto", ax=ax) 
 plt.colorbar(dsartist)
-plt.show()
+plt.xlabel("Basepairs from BLS site")
+plt.ylabel("Allele age")
+plt.title("Ne="+str(Ne)+" mu="+str(mutrate)+" r="+str(recrate)+" Simulated="+str(simulated))
+plt.savefig(inoutpath+"output_s0.01-0.01_c640000_agedensity.png")
+plt.close()
 
-plt.scatter([x[0] for x in AFs], [x[1] for x in AFs],
-        alpha=0.1)
+toplot = pd.DataFrame(AFs, columns=["Distance","Allele frequency","Rep"])
+fig,ax=plt.subplots()
+dsartist = dsshow( toplot, ds.Point("Distance", "Allele frequency"),
+        ds.count(), plot_width=50, plot_height=50, aspect="auto", ax=ax) 
+plt.colorbar(dsartist)
 plt.xlabel("Basepairs from BLS site")
 plt.ylabel("Allele frequency")
 plt.title("Ne="+str(Ne)+" mu="+str(mutrate)+" r="+str(recrate)+" Simulated="+str(simulated))
-plt.savefig(inoutpath+'/output_s0.01-0.01_c640000_af.png')
+plt.savefig(inoutpath+'/output_s0.01-0.01_c640000_afdensity.png')
 plt.close()
-#plt.show()
 
 MAFs = [1-x[1] if x[1]>0.5 else x[1] for x in AFs ]
 plt.scatter([x[0] for x in AFs], [MAFs[i] for i,x in enumerate(AFs)],
         alpha=0.1)
+toplot = pd.DataFrame({'Distance':[x[0] for x in AFs], 'Minor allele frequency':[MAFs[i] for i,x in enumerate(AFs)]})
+fig,ax=plt.subplots()
+dsartist = dsshow( toplot, ds.Point("Distance", "Minor allele frequency"),
+        ds.count(), plot_width=50, plot_height=50, aspect="auto", ax=ax) 
+plt.colorbar(dsartist)
 plt.xlabel("Basepairs from BLS site")
 plt.ylabel("Minor allele frequency")
 plt.title("Ne="+str(Ne)+" mu="+str(mutrate)+" r="+str(recrate)+" Simulated="+str(simulated))
-plt.savefig(inoutpath+'/output_s0.01-0.01_c640000_maf.png')
+plt.savefig(inoutpath+'/output_s0.01-0.01_c640000_mafdensity.png')
 plt.close()
 #plt.show()
 
-plt.scatter([x[0] for x in THs], [x[1] for x in THs],
-        alpha=0.1)
-plt.xlabel("Basepairs from BLS site (midpoint of tree span)")
-plt.ylabel("Total tree height")
-plt.title("Ne="+str(Ne)+" mu="+str(mutrate)+" r="+str(recrate)+" Simulated="+str(simulated))
-plt.savefig(inoutpath+'/output_s0.01-0.01_c640000_th.png')
-plt.close()
-#plt.show()
-import datashader as ds
-from datashader.mpl_ext import dsshow
 toplot = pd.DataFrame(THs, columns=["Distance","Tree height"])
 fig,ax=plt.subplots()
 dsartist = dsshow( toplot, ds.Point("Distance", "Tree height"),
-        ds.count(), plot_width=50, plot_height=50, aspect="auto", ax=ax)
+        ds.count(), plot_width=50, plot_height=50, aspect="auto", ax=ax) 
 plt.colorbar(dsartist)
-plt.show()
-
-plt.scatter([x[0] for x in PIssite], [x[1] for x in PIssite],
-        alpha=0.1)
 plt.xlabel("Basepairs from BLS site (midpoint of tree span)")
-plt.ylabel("Site-based diversity")
+plt.ylabel("Total tree height")
 plt.title("Ne="+str(Ne)+" mu="+str(mutrate)+" r="+str(recrate)+" Simulated="+str(simulated))
-plt.savefig(inoutpath+'/output_s0.01-0.01_c640000_pisite.png')
+plt.savefig(inoutpath+'/output_s0.01-0.01_c640000_thdensity.png')
 plt.close()
 #plt.show()
 
-plt.scatter([x[0] for x in PIs], [x[1] for x in PIs],
-        alpha=0.1)
+toplot = pd.DataFrame(PIssite, columns=["Distance","Site-based diversity"])
+fig,ax=plt.subplots()
+dsartist = dsshow( toplot, ds.Point("Distance", "Site-based diversity"),
+        ds.count(), plot_width=50, plot_height=50, aspect="auto", ax=ax) 
+plt.colorbar(dsartist)
+plt.xlabel("Basepairs from BLS site (midpoint of tree span)")
+plt.ylabel("Site-based diversity")
+plt.title("Ne="+str(Ne)+" mu="+str(mutrate)+" r="+str(recrate)+" Simulated="+str(simulated))
+plt.savefig(inoutpath+'/output_s0.01-0.01_c640000_pisitedensity.png')
+plt.close()
+#plt.show()
+
+toplot = pd.DataFrame(PIs, columns=["Distance","Branch-based diversity"])
+fig,ax=plt.subplots()
+dsartist = dsshow( toplot, ds.Point("Distance", "Branch-based diversity"),
+        ds.count(), plot_width=50, plot_height=50, aspect="auto", ax=ax) 
+plt.colorbar(dsartist)
 plt.xlabel("Basepairs from BLS site (midpoint of tree span)")
 plt.ylabel("Branch length-based diversity")
 plt.title("Ne="+str(Ne)+" mu="+str(mutrate)+" r="+str(recrate)+" Simulated="+str(simulated))
-plt.savefig(inoutpath+'/output_s0.01-0.01_c640000_pibranch.png')
+plt.savefig(inoutpath+'/output_s0.01-0.01_c640000_pibranchdensity.png')
 plt.close()
 #plt.show()
 
