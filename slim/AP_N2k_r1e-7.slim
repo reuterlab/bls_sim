@@ -101,7 +101,7 @@ initialize() {
 //NOTE:  reproduction() and survival() happen *after* first() and *before* late in a nonWF model
 // late in each cycle, check if mutation was fixed or lost, and if so finish simulation
 // if mutation is still segregating, print out its frequency ever X generations, and recalculate fitness of individuals
-1:400000 late() {
+1:640000 late() {
     if(size(sim.mutations)>0){ // if mutation is still there
       for(mut in sim.mutations){
         // calculate mutation frequency
