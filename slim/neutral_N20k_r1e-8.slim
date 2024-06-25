@@ -1,7 +1,7 @@
-// Last modified by Debora Brandt 24 jun 2024
+// Last modified by Debora Brandt 25 jun 2024
 
 //To run:
-//slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d d_folder="'$OUTDIR'/" neutral_N2k.slim
+//slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d d_folder="'$OUTDIR'/" neutral_N2k_r1e-8.slim
 
 ///////////////////////////////////////////////////////////////
 
@@ -35,7 +35,7 @@ initialize() {
 
     setSeed(d_seed);
     defineConstant("SimEND", 640000);
-	 defineConstant("SimOUT", c(8000,16000,32000,80000,160000,320000,640000));
+	 defineConstant("SimOUT", c(160000,320000,640000));
     defineConstant("starttime", clock());
     full_genome_len = 15000 - 1; // simulate 15kb sequence
     defineConstant("scaling_factor", 1);
