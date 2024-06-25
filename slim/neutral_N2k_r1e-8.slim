@@ -1,0 +1,76 @@
+// Last modified by Debora Brandt 25 jun 2024
+
+//To run:
+//slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d d_folder="'$OUTDIR'/" neutral_N2k_r1e-8.slim
+
+///////////////////////////////////////////////////////////////
+
+// define the reproduction function
+// probability of being a parent of the next generation is given by fitness
+reproduction () {
+    females = p1.subsetIndividuals(sex="F");
+    males = p1.subsetIndividuals(sex="M");
+    moms = sample(females, asInteger(N), replace=T, weights=females.tagF);
+    dads = sample(males, asInteger(N), replace=T, weights=males.tagF);
+    for (i in seqLen(asInteger(N))){
+      p1.addCrossed(moms[i], dads[i]);
+    }  
+    self.active = 0; // usually the reproduction function is called once per individual. This disables it such that the reproduction function is called once to trigger reproduction of the whole population at once. 
+}
+
+// survival is independent of fitness; parents die, offspring live
+survival() {
+  return (individual.age == 0);
+}
+
+///////////////////////////////////////////////////////////////
+
+initialize() {
+    //define command line params for testing:
+    //defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/neutral/");
+    //defineConstant("d_repID", 1); // 1-10000
+    //defineConstant("d_seed", 31148); // random number $RANDOM
+    //defineConstant("jobid", 000000); // job id in cluster $JOB_ID
+    //defineConstant("rand_inv", 1);
+
+    setSeed(d_seed);
+    defineConstant("SimEND", 640000);
+	 defineConstant("SimOUT", c(16000,32000,64000,160000,320000,640000));
+    defineConstant("starttime", clock());
+    full_genome_len = 15000 - 1; // simulate 15kb sequence
+    defineConstant("scaling_factor", 1);
+    defineConstant("N", round(20000/scaling_factor));     
+
+    // define the simulation type
+    initializeSLiMModelType("nonWF");
+    initializeSLiMOptions(mutationRuns=1);
+    initializeTreeSeq();
+    //"A" specifies modeling of an autosome. This is essential to turn on modelling separate sexes on slim (default is hermaphroditic individuals)
+    initializeSex("A");
+    initializeRecombinationRate(scaling_factor*1e-8);
+    initializeMutationRate(0);
+    initializeMutationType("m1", 0.5, "f", 0.0);
+    // g1 genomic element type: uses m1 for all mutations
+    initializeGenomicElementType("g1", m1, 1.0);
+    // single-locus chromosome
+    initializeGenomicElement(g1, 0, full_genome_len);
+}
+//First cycle: create pop and add mutation
+1 first() {
+    sim.addSubpop("p1", asInteger(N));
+    sim.subpopulations.individuals.tagF = 1.0; // all individuals start with fitness of 1
+}
+
+//NOTE:  reproduction() and survival() happen *after* first() and *before* late in a nonWF model
+1:640000 late() {
+    sim.subpopulations.individuals.tagF = 1.0; // all individuals	 with fitness of 1
+    if(any(sim.cycle == SimOUT)){
+      print("saving tree sequence at cycle " + sim.cycle);
+      //save tree sequence at this timepoint
+      sim.treeSeqOutput(d_folder+"output_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
+    }
+    if(sim.cycle == SimEND){ //if this is the last generation we're simulating, write outputs and end simulation
+      print("time at ENDSIM: " + (clock() - starttime));
+      sim.simulationFinished(); // finish this simulation
+    }
+}
