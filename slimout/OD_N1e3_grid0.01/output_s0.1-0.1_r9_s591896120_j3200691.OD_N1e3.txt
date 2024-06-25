@@ -1,2 +1,0 @@
-sel1,sel2,h,bls_start,4000,40000,400000,lost,fixed,maxfreq,newmut
-0.1,0.1,NA,9,0.5595,0.5365,0.4825,NA,NA,0.6565,2
