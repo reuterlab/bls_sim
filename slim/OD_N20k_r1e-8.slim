@@ -1,7 +1,7 @@
-// Last modified by Debora Brandt 15 may 2024
+// Last modified by Debora Brandt 1 jul 2024
 
 //To run:
-//slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sel1=$s1 -d sel2=$s2 -d d_folder="'$OUTDIR'/" -d rand_inv=1 OD_N2k_r1e-6.slim
+//slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d sel1=$s1 -d sel2=$s2 -d d_folder="'$OUTDIR'/" -d rand_inv=1 OD_N20k_r1e-8.slim
 
 ///////////////////////////////////////////////////////////////
 
@@ -27,18 +27,18 @@ survival() {
 
 initialize() {
     //define command line params:
-    //defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/OD_N1e3/");
-    //defineConstant("d_repID", 1); // 1-10000
-    //defineConstant("d_seed", 31148); // random number $RANDOM
-    //defineConstant("jobid", 000000); // job id in cluster $JOB_ID
-    //defineConstant("sel1", 0.01); // grid 0-0.2 by 0.01
-    //defineConstant("sel2", 0.01); // grid 0-0.2 by 0.01
-    //defineConstant("rand_inv", 1);
+//    defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/OD_N20k_r1e-8_testing/");
+//    defineConstant("d_repID", 1); // 1-10000
+//    defineConstant("d_seed", 31148); // random number $RANDOM
+//    defineConstant("jobid", 000000); // job id in cluster $JOB_ID
+//    defineConstant("sel1", 0.1); // grid 0-0.2 by 0.01
+//    defineConstant("sel2", 0.1); // grid 0-0.2 by 0.01
+//    defineConstant("rand_inv", 1);
 
     setSeed(d_seed);
-    defineConstant("OutputFile", d_folder+"output_s"+sel1+"-"+sel2+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+ ".OD_N1e3.txt");
-    defineConstant("SimEND", 640000);
-	 defineConstant("SimOUT", c(8000,32000,64000,80000,320000,640000));
+    defineConstant("OutputFile", d_folder+"output_s"+sel1+"-"+sel2+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+ ".OD_N20k_r1e-8.txt");
+    defineConstant("SimEND", 320000);
+	 defineConstant("SimOUT", c(16000,32000,160000,320000));
     defineConstant("starttime", clock());
     full_genome_len = 10000 - 1; // simulate 10kb sequence
     defineConstant("scaling_factor", 1);
@@ -85,7 +85,7 @@ initialize() {
     	}//for pop
     }//for mut
     // Start creating output
-    writeFile(OutputFile, "sel1,sel2,h,bls_start,8000,32000,64000,80000,320000,640000,lost,fixed,maxfreq,newmut", append=F);
+    writeFile(OutputFile, "sel1,sel2,h,bls_start,16000,32000,160000,320000,lost,fixed,maxfreq,newmut", append=F);
     defineGlobal("output", c(sel1,sel2,"NA"));
     print("sel1 "+sel1);
     print("sel2 "+sel2);
@@ -97,7 +97,7 @@ initialize() {
 //NOTE:  reproduction() and survival() happen *after* first() and *before* late in a nonWF model
 // late in each cycle, check if mutation was fixed or lost, and if so finish simulation
 // if mutation is still segregating, print out its frequency ever X generations, and recalculate fitness of individuals
-1:640000 late() {
+1:320000 late() {
     if(size(sim.mutations)>0){ // if mutation is still there
       for(mut in sim.mutations){
         // calculate mutation frequency

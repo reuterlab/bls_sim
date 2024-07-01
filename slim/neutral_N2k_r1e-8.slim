@@ -1,4 +1,4 @@
-// Last modified by Debora Brandt 25 jun 2024
+// Last modified by Debora Brandt 1 jul 2024
 
 //To run:
 //slim -d jobid=$JOB_ID -d d_seed=$SEED -d d_repID=$REP -d d_folder="'$OUTDIR'/" neutral_N2k_r1e-8.slim
@@ -27,19 +27,19 @@ survival() {
 
 initialize() {
     //define command line params for testing:
-    //defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/neutral/");
-    //defineConstant("d_repID", 1); // 1-10000
-    //defineConstant("d_seed", 31148); // random number $RANDOM
-    //defineConstant("jobid", 000000); // job id in cluster $JOB_ID
-    //defineConstant("rand_inv", 1);
+//    defineConstant("d_folder", "/home/debora/Dropbox/private/projects/uclpostdoc/bls_sim/slimout/neutral_N2k_r1e-8_testing/");
+//    defineConstant("d_repID", 1); // 1-10000
+//    defineConstant("d_seed", 1); // random number $RANDOM
+//    defineConstant("jobid", 000000); // job id in cluster $JOB_ID
+//    defineConstant("rand_inv", 1);
 
     setSeed(d_seed);
-    defineConstant("SimEND", 640000);
-	 defineConstant("SimOUT", c(16000,32000,64000,160000,320000,640000));
+    defineConstant("SimEND", 320000);
+	 defineConstant("SimOUT", c(16000,32000,160000,320000));
     defineConstant("starttime", clock());
     full_genome_len = 15000 - 1; // simulate 15kb sequence
     defineConstant("scaling_factor", 1);
-    defineConstant("N", round(20000/scaling_factor));     
+    defineConstant("N", round(2000/scaling_factor));     
 
     // define the simulation type
     initializeSLiMModelType("nonWF");
@@ -62,7 +62,7 @@ initialize() {
 }
 
 //NOTE:  reproduction() and survival() happen *after* first() and *before* late in a nonWF model
-1:640000 late() {
+1:320000 late() {
     sim.subpopulations.individuals.tagF = 1.0; // all individuals	 with fitness of 1
     if(any(sim.cycle == SimOUT)){
       print("saving tree sequence at cycle " + sim.cycle);
