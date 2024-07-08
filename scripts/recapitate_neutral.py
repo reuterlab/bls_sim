@@ -10,7 +10,7 @@
 
 import tskit as tsk # installed via mamba 
 import msprime #installed via pip bc mamba didnt work
-import pyslim #installed via pip bc mamba didnt work
+import pyslim #installed via 'pip install pyslim'
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
