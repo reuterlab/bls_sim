@@ -1,8 +1,3 @@
-rep=10000
-
-qsub -v OUTDIR='/SAN/reuterlab/balsel_detection/bls_sim/slimout/neutral_N20k_r1e-8' -t 1-$rep job_run_neutral_N20k_r1e-8.sh
-# kill jobs after 3000 reps are done
-
 #----- wrong run - fixed
 qsub -v OUTDIR='/SAN/reuterlab/balsel_detection/bls_sim/slimout/neutral_N20k_r1e-8' -t 1-$rep job_run_neutral_N2k_r1e-8.sh # wrong OUTdir and slim script
 qdel 4281843
@@ -18,3 +13,5 @@ rm /SAN/reuterlab/balsel_detection/bls_sim/slimout/neutral_N20k_r1e-8/*j4281843*
 
 rep=3000
 qsub -v OUTDIR='/SAN/reuterlab/balsel_detection/bls_sim/slimout/neutral_N2k_r1e-8' -t 1-$rep job_run_neutral_N2k_r1e-8.sh
+
+qsub -v OUTDIR='/SAN/reuterlab/balsel_detection/bls_sim/slimout/neutral_N20k_r1e-8' -t 1-$rep job_run_neutral_N20k_r1e-8.sh

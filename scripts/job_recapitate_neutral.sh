@@ -12,7 +12,8 @@
 
 #$ -l tmem=3G
 #$ -l h_vmem=3G
-#$ -l h_rt=72:00:00 
+#$ -l h_rt=12:00:00 
+##in 1h, did 1678 trees; in 8h did 11768 files (including previous 1678)
 
 #These are optional flags but you probably want them in all jobs
 
@@ -32,5 +33,8 @@ if [ ! -d $OUTDIR ]; then
 for treefile in $INDIR/*trees
 do
     vcfpref=$(basename $treefile .trees)
-    python3 recapitate_neutral.py -i $treefile -o ${OUTDIR}/${vcfpref}_spl${nspl} --vcf --nspl $nspl --ne $ne
+    vcffile=${vcfpref}_mut${mu}_spl${nspl}
+    if [ ! -f $OUTDIR/${vcffile}.vcf ]; then
+    python3 recapitate_neutral.py -i $treefile -o ${OUTDIR}/${vcffile} --vcf --nspl $nspl --ne $ne --mu $mu --re $re 
+    fi
 done

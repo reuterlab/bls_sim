@@ -23,7 +23,7 @@
 #$ -o /SAN/reuterlab/balsel_detection/bls_sim/scripts/sge_output/
 
 #The code you want to run now goes here.
-source /share/apps/source_files/python/python-3.11.8.source
+source /share/apps/source_files/python/python-3.9.5.source
 
 if [ ! -d $OUTDIR ]; then
 	mkdir $OUTDIR
