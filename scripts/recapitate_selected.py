@@ -34,10 +34,12 @@ args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])
 #Ne=20000
 #recrate=1e-6
 #mutrate=1e-7
+#nspl=100
 
 Ne=int(args.ne)
 recrate=float(args.re)
 mutrate=float(args.mu)
+nspl=int(args.nspl)
 
 infile = args.input
 
@@ -48,16 +50,6 @@ else:
 
 # Load the .trees file
 ts = tsk.load(infile)
-
-# Define function to calculate tree heights, giving uncoalesced sites the maximum time
-def tree_heights(ts):
-    heights = np.zeros(ts.num_trees)
-    for tree in ts.trees():
-        children = tree.children(tree.root)
-        real_root = tree.root if len(children) > 1 else children[0]
-        heights[tree.index] = tree.time(real_root)
-    return sum(heights)/len(heights)
-
 # Recapitate!
 recap = pyslim.recapitate(ts, ancestral_Ne=Ne, recombination_rate=recrate)
 #recap.dump("../data/"+pref+"_recap.trees")
@@ -82,22 +74,17 @@ print(f"The tree sequence now has {mutated.num_mutations} mutations,\n"
 mutsim = mutated.simplify()
 if args.nspl:
     # subsample individuals
-    indspl = random.sample([x.id for x in mutsim.individuals()], k=int(args.nspl))
+    indspl = random.sample([x.id for x in mutsim.individuals()], k=nspl)
 else:
     indspl = [x.id for x in mutsim.individuals()]
+#get pair of nodes corresponding to each individual
+nodespl = [mutated.individual(x).nodes[0] for x in indspl]+[mutated.individual(x).nodes[1] for x in indspl]
+mutsim_splind = mutated.simplify(samples=nodespl)
+
+mutsim_splind.dump(pref+".trees")
+
 if args.vcf:
     # write to VCF file
     samplenames = ["ind_"+str(x) for x in indspl]
     with open(pref+".vcf" , "w") as vcf:
-        mutsim.write_vcf(vcf, individuals=indspl, individual_names = samplenames)
-
-# some checks/visualizations:
-#nodespl = list(np.concatenate([mutsim.individual(x).nodes for x in indspl]))
-#sfs=mutsim.allele_frequency_spectrum(sample_sets=[nodespl], polarised=True, span_normalise=False)
-#np.savetxt(pref+"_SFS.csv", sfs, delimiter=",")
-#
-#plt.bar(np.arange(mutsim.num_samples + 1), sfs)
-#plt.title("Polarised allele frequency spectrum")
-#plt.show()
-#
-#print(tree_heights(mutsim))
+        mutsim_splind.write_vcf(vcf, individual_names = samplenames)
