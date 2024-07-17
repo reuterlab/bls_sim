@@ -29,11 +29,11 @@ parser.add_argument("--re", help = "recombination rate")
 
 args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])
 
-#infile = "../slimout/OD_N1e3_grid0.01/output_s0.1-0.1_r9_s591896120_j3200691_c4000.trees"
-#pref = "../vcf/OD_N1e3_grid0.01/output_s0.1-0.1_r9_s591896120_j3200691_c4000"
-#Ne=20000
-#recrate=1e-6
-#mutrate=1e-7
+#infile="../slimout/OD_N2k_r1e-8_grid0.1/output_s0.1-0.1_r1_s682405976_j4305864_c16000.trees"
+#pref = "../vcf/OD_N2k_r1e-8_grid0.1/output_s0.1-0.1_r1_s682405976_j4305864_c16000"
+#Ne=2000
+#recrate=1e-8
+#mutrate=1e-8
 #nspl=100
 
 Ne=int(args.ne)
@@ -54,6 +54,10 @@ ts = tsk.load(infile)
 recap = pyslim.recapitate(ts, ancestral_Ne=Ne, recombination_rate=recrate)
 #recap.dump("../data/"+pref+"_recap.trees")
 recsim = recap.simplify()
+# replace ancestral state from selected site (which comes from slim as an empty string) to be zero
+# see https://tskit.dev/pyslim/docs/latest/tutorial.html#writing-out-genotypes-to-vcf
+nts=pyslim.generate_nucleotides(recsim)
+nts=pyslim.convert_alleles(nts)
 # inserted sanity check:
 # orig_max_roots = max(t.num_roots for t in ts.trees())
 # recap_max_roots = max(t.num_roots for t in recap.trees())
@@ -63,7 +67,7 @@ recsim = recap.simplify()
 rates_exclmidsite = msprime.RateMap(position=[0, 4999, 5000, 10000], rate=[mutrate, 0, mutrate])
 # Ne*u ~ 0.001 in humans, 0.01 in Dmel
 # u=1e-7 -> Ne*u = {1e-4, 1e-3, 1e-2} with Ne = {1e3, 1e4, 1e5}
-mutated = msprime.sim_mutations(recsim, rate=rates_exclmidsite) 
+mutated = msprime.sim_mutations(nts, rate=rates_exclmidsite) 
 
 print(f"The tree sequence now has {mutated.num_mutations} mutations,\n"
       f"Before it had {recsim.num_mutations} mutations.\n"
