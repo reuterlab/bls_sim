@@ -19,3 +19,13 @@ do for t in 16000 32000 160000 320000
 done
 done
 done
+
+for s1 in 0.1 0.2 0.5 0.9 1
+do for s2 in 0.1 0.2 0.5 0.9 1
+do
+    for t in 16000 32000 160000 320000
+    do Rscript ballerpower.R $BALDIR/$simpref/all_s${s1}-${s2}_c${t}.B2 $BALDIR/neutral_N2k_r1e-8/all_c${t}.B2
+    done
+done
+done
+Rscript ballerpower.R 
