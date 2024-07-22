@@ -46,15 +46,18 @@ for simpref in OD_N2k_r1e-8_grid0.1 AP_N2k_r1e-8_grid0.1 SA_N2k_r1e-8_grid0.1; d
 seltype="OD"
 Ne="2"
 rec="1e-8"
+mut="1e-8"
 simpref=${seltype}_N${Ne}k_r${rec}_grid0.1
-for s1 in 0.1 0.2 0.5 0.9 1; do
+for s1 in 0.1 0.2;do # 0.5 0.9 1; do
 for s2 in 0.1 0.2 0.5 0.9 1; do
     for t in 16000 32000 160000 320000; do
-    Rscript ballerpower.R $BALDIR/$simpref/all_s${s1}-${s2}_c${t}.B2 $BALDIR/neutral_N2k_r1e-8_fornull/all_c${t}.B2
+    Rscript ballerpower.R $BALDIR/$simpref/all_s${s1}-${s2}_c${t}.B2 $BALDIR/neutral_N2k_r1e-8_fornull/all_c${t}.B2 $seltype $Ne $rec $mut $s1 $s2 $t
     done
 done
 done
 done
+cat $BALDIR/$simpref/all_s*_power.txt > $BALDIR/allpower.txt
+Rscript plot_baller_power.R
 
 for simpref in OD_N2k_r1e-8_grid0.01 AP_N2k_r1e-8_grid0.01 SA_N2k_r1e-8_grid0.01; do
 for s1 in 0.01 0.02 0.05 0.09 0.1; do
