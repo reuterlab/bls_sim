@@ -37,7 +37,7 @@ initialize() {
     defineConstant("SimEND", 320000);
 	 defineConstant("SimOUT", c(16000,32000,160000,320000));
     defineConstant("starttime", clock());
-    full_genome_len = 15000 - 1; // simulate 15kb sequence
+    full_genome_len = 20000 - 1; // simulate 15kb sequence -> changed to 20kb because with Ne=2k and mu=1e-8 there were far from enough central sites with 10kb around them
     defineConstant("scaling_factor", 1);
     defineConstant("N", round(2000/scaling_factor));     
 
@@ -67,7 +67,7 @@ initialize() {
     if(any(sim.cycle == SimOUT)){
       print("saving tree sequence at cycle " + sim.cycle);
       //save tree sequence at this timepoint
-      sim.treeSeqOutput(d_folder+"output_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
+      sim.treeSeqOutput(d_folder+"output_s0-0_h0_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
     }
     if(sim.cycle == SimEND){ //if this is the last generation we're simulating, write outputs and end simulation
       print("time at ENDSIM: " + (clock() - starttime));
