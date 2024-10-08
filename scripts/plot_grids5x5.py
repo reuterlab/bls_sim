@@ -22,6 +22,7 @@ grid = args.grid
 files=glob.glob(indir+"*.txt")
 
 tot_h50 = np.zeros((5,5))
+totbls_h50 = np.zeros((5,5)) # total number of sims that went indo bls phase (polym not lost before reaching 5%)
 nlost_h50 = np.zeros((5,5))
 proplost_h50 = np.zeros((5,5))
 meantlost_h50 = np.zeros((5,5))
@@ -39,6 +40,7 @@ tgridprop320k_h50 = np.zeros((5,5))
 meanmaxfreq_h50 = np.zeros((5,5))
 
 tot_h25 = np.zeros((5,5))
+totbls_h25 = np.zeros((5,5)) # total number of sims that went indo bls phase (polym not lost before reaching 5%)
 nlost_h25 = np.zeros((5,5))
 proplost_h25 = np.zeros((5,5))
 meantlost_h25 = np.zeros((5,5))
@@ -54,6 +56,9 @@ tgridprop32k_h25 = np.zeros((5,5))
 tgridprop160k_h25 = np.zeros((5,5))
 tgridprop320k_h25 = np.zeros((5,5))
 meanmaxfreq_h25 = np.zeros((5,5))
+
+selalpha = np.zeros((5,5))
+pstar = np.zeros((5,5))
 
 OD_flag = False
 
@@ -74,6 +79,7 @@ for file in files:
             t1 = s_dic[s1]
             t2 = s_dic[s2]
             h = line[2]
+            bls_start = line[3]
             f16k = float(line[4])
             f32k = float(line[5])
             f160k = float(line[6])
@@ -81,15 +87,16 @@ for file in files:
             tlost = line[8]
             tfixed = line[9]
             maxfreq = float(line[10])
-            
             if h=="NA": #for overdominance
                 OD_flag = True
                 tgrid16k_h50[t1,t2]  += f16k>0  and f16k <1
                 tgrid32k_h50[t1,t2]  += f32k>0  and f32k <1
                 tgrid160k_h50[t1,t2] += f160k>0 and f160k <1
                 tgrid320k_h50[t1,t2] += f320k>0 and f320k <1
-                tot_h50[t1,t2] += 1
                 meanmaxfreq_h50[t1,t2] += maxfreq
+                tot_h50[t1,t2] += 1
+                if bls_start!="NA":
+                    totbls_h50[t1,t2] += 1
                 if tlost != "NA":
                     nlost_h50[t1,t2] += 1
                     meantlost_h50[t1,t2] += float(tlost)
@@ -102,8 +109,10 @@ for file in files:
                 tgrid32k_h50[t1,t2]  += f32k>0  and f32k <1
                 tgrid160k_h50[t1,t2] += f160k>0 and f160k <1
                 tgrid320k_h50[t1,t2] += f320k>0 and f320k <1
-                tot_h50[t1,t2] += 1
                 meanmaxfreq_h50[t1,t2] += maxfreq
+                tot_h50[t1,t2] += 1
+                if bls_start!="NA":
+                    totbls_h50[t1,t2] += 1
                 if tlost != "NA":
                     nlost_h50[t1,t2] += 1
                     meantlost_h50[t1,t2] += float(tlost)
@@ -116,8 +125,10 @@ for file in files:
                 tgrid32k_h25[t1,t2]  += f32k>0  and f32k <1
                 tgrid160k_h25[t1,t2] += f160k>0 and f160k <1
                 tgrid320k_h25[t1,t2] += f320k>0 and f320k <1
-                tot_h25[t1,t2]+=1
                 meanmaxfreq_h25[t1,t2] += maxfreq
+                tot_h25[t1,t2]+=1
+                if bls_start!="NA":
+                    totbls_h25[t1,t2] += 1
                 if tlost != "NA":
                     nlost_h25[t1,t2] += 1
                     meantlost_h25[t1,t2] += float(tlost)
@@ -134,13 +145,14 @@ proplost_h50 = nlost_h50/tot_h50
 meantlost_h50 = meantlost_h50/nlost_h50
 propfix_h50 = nfix_h50/tot_h50
 meantfix_h50 = meantfix_h50/nfix_h50
-tgridprop16k_h50 = tgrid16k_h50/tot_h50
-tgridprop32k_h50 = tgrid32k_h50/tot_h50
-tgridprop160k_h50 = tgrid160k_h50/tot_h50
-tgridprop320k_h50 = tgrid320k_h50/tot_h50
+tgridprop16k_h50 = tgrid16k_h50/totbls_h50
+tgridprop32k_h50 = tgrid32k_h50/totbls_h50
+tgridprop160k_h50 = tgrid160k_h50/totbls_h50
+tgridprop320k_h50 = tgrid320k_h50/totbls_h50
 meanmaxfreq_h50 = meanmaxfreq_h50/tot_h50
 
 ### Create plots 
+
 
 # Number of simulations
 
@@ -150,7 +162,7 @@ ax = sns.heatmap(tot_h50, linewidth=0.5,
         xticklabels=sorted(s_dic.keys()),
         yticklabels=sorted(s_dic.keys()))
 ax.invert_yaxis()
-ax.set(xlabel='t2', ylabel='t1')
+ax.set(xlabel='s2', ylabel='s1')
 #plt.show()
 plt.savefig(outdir+"h50_nsim.png")
 
@@ -163,7 +175,7 @@ ax = sns.heatmap(proplost_h50, linewidth=0.5,
         xticklabels=sorted(s_dic.keys()),
         yticklabels=sorted(s_dic.keys()))
 ax.invert_yaxis()
-ax.set(xlabel='t2', ylabel='t1')
+ax.set(xlabel='s2', ylabel='s1')
 ax.set_title('Proportion of losses')
 #plt.show()
 plt.savefig(outdir+"h50_proplost.png")
@@ -174,7 +186,7 @@ ax = sns.heatmap(meantlost_h50, linewidth=0.5,
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
 ax.invert_yaxis()
-ax.set(xlabel='t2', ylabel='t1')
+ax.set(xlabel='s2', ylabel='s1')
 ax.set_title('Mean time to loss')
 #plt.show()
 plt.savefig(outdir+"h50_meantlost.png")
@@ -188,7 +200,7 @@ ax = sns.heatmap(propfix_h50, linewidth=0.5,
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
 ax.invert_yaxis()
-ax.set(xlabel='t2', ylabel='t1')
+ax.set(xlabel='s2', ylabel='s1')
 ax.set_title('Proportion of fixations')
 #plt.show()
 plt.savefig(outdir+"h50_propfix.png")
@@ -199,7 +211,7 @@ ax = sns.heatmap(meantfix_h50, linewidth=0.5,
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
 ax.invert_yaxis()
-ax.set(xlabel='t2', ylabel='t1')
+ax.set(xlabel='s2', ylabel='s1')
 ax.set_title('Mean time to fixation')
 #plt.show()
 plt.savefig(outdir+"h50_meantfix.png")
@@ -209,49 +221,49 @@ plt.savefig(outdir+"h50_meantfix.png")
 #---------------------
 ## colorscale form 0-1
 plt.figure()
-ax = sns.heatmap(tgridprop16k_h50, linewidth=0.5,
+ax = sns.heatmap(tgridprop16k_h50, annot=True, fmt='.2f', linewidth=0.5,
         cbar_kws={'label': 'Proportion of simulations with polymorphism'},
                  vmin=0,vmax=1,
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
 ax.invert_yaxis()
-ax.set(xlabel='t2', ylabel='t1')
+ax.set(xlabel='s2', ylabel='s1')
 ax.set_title('16k generations')
 #plt.show()
 plt.savefig(outdir+"h50_t16kproppoly.png")
 
 plt.figure()
-ax = sns.heatmap(tgridprop32k_h50, linewidth=0.5,
+ax = sns.heatmap(tgridprop32k_h50, annot=True, fmt='.2f', cmap="viridis", linewidth=0.5,
         cbar_kws={'label': 'Proportion of simulations with polymorphism'},
                  vmin=0,vmax=1,
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
 ax.invert_yaxis()
-ax.set(xlabel='t2', ylabel='t1')
+ax.set(xlabel='s2', ylabel='s1')
 ax.set_title('32k generations')
 #plt.show()
 plt.savefig(outdir+"h50_t32kproppoly.png")
 
 plt.figure()
-ax = sns.heatmap(tgridprop160k_h50, linewidth=0.5,
+ax = sns.heatmap(tgridprop160k_h50, annot=True, fmt='.2f', cmap="viridis", linewidth=0.5,
         cbar_kws={'label': 'Proportion of simulations with polymorphism'},
                  vmin=0,vmax=1,
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
 ax.invert_yaxis()
-ax.set(xlabel='t2', ylabel='t1')
+ax.set(xlabel='s2', ylabel='s1')
 ax.set_title('160k generations')
 #plt.show()
 plt.savefig(outdir+"h50_t160kproppoly.png")
 
 plt.figure()
-ax = sns.heatmap(tgridprop320k_h50, linewidth=0.5,
+ax = sns.heatmap(tgridprop320k_h50, annot=True, fmt='.2f', cmap="viridis", linewidth=0.5,
         cbar_kws={'label': 'Proportion of simulations with polymorphism'},
                  vmin=0,vmax=1,
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
 ax.invert_yaxis()
-ax.set(xlabel='t2', ylabel='t1')
+ax.set(xlabel='s2', ylabel='s1')
 ax.set_title('320k generations')
 #plt.show()
 plt.savefig(outdir+"h50_t320kproppoly.png")
@@ -259,45 +271,45 @@ plt.savefig(outdir+"h50_t320kproppoly.png")
 #------------------------
 # no limits to colorscale 
 plt.figure()
-ax = sns.heatmap(tgridprop16k_h50, linewidth=0.5,
+ax = sns.heatmap(tgridprop16k_h50, annot=True, fmt='.2f', cmap="viridis", linewidth=0.5,
         cbar_kws={'label': 'Proportion of simulations with polymorphism'},
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
 ax.invert_yaxis()
-ax.set(xlabel='t2', ylabel='t1')
+ax.set(xlabel='s2', ylabel='s1')
 ax.set_title('16k generations')
 #plt.show()
 plt.savefig(outdir+"h50_t16kproppoly_freescale.png")
 
 plt.figure()
-ax = sns.heatmap(tgridprop32k_h50, linewidth=0.5,
+ax = sns.heatmap(tgridprop32k_h50, annot=True, fmt='.2f', cmap="viridis", linewidth=0.5,
         cbar_kws={'label': 'Proportion of simulations with polymorphism'},
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
 ax.invert_yaxis()
-ax.set(xlabel='t2', ylabel='t1')
+ax.set(xlabel='s2', ylabel='s1')
 ax.set_title('32k generations')
 #plt.show()
 plt.savefig(outdir+"h50_t32kproppoly_freescale.png")
 
 plt.figure()
-ax = sns.heatmap(tgridprop160k_h50, linewidth=0.5,
+ax = sns.heatmap(tgridprop160k_h50, annot=True, fmt='.2f', cmap="viridis", linewidth=0.5,
         cbar_kws={'label': 'Proportion of simulations with polymorphism'},
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
 ax.invert_yaxis()
-ax.set(xlabel='t2', ylabel='t1')
+ax.set(xlabel='s2', ylabel='s1')
 ax.set_title('160k generations')
 #plt.show()
 plt.savefig(outdir+"h50_t160kproppoly_freescale.png")
 
 plt.figure()
-ax = sns.heatmap(tgridprop320k_h50, linewidth=0.5,
+ax = sns.heatmap(tgridprop320k_h50, annot=True, fmt='.2f', cmap="viridis", linewidth=0.5,
         cbar_kws={'label': 'Proportion of simulations with polymorphism'},
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
 ax.invert_yaxis()
-ax.set(xlabel='t2', ylabel='t1')
+ax.set(xlabel='s2', ylabel='s1')
 ax.set_title('320k generations')
 #plt.show()
 plt.savefig(outdir+"h50_t320kproppoly_freescale.png")
@@ -309,7 +321,7 @@ ax = sns.heatmap(meanmaxfreq_h50, linewidth=0.5,
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
 ax.invert_yaxis()
-ax.set(xlabel='t2', ylabel='t1')
+ax.set(xlabel='s2', ylabel='s1')
 ax.set_title('Mean max freq')
 #plt.show()
 plt.savefig(outdir+"h50_meanmaxfreq.png")
@@ -325,10 +337,10 @@ if not OD_flag:
     meantlost_h25 = meantlost_h25/nlost_h25
     propfix_h25 = nfix_h25/tot_h25
     meantfix_h25 = meantfix_h25/nfix_h25
-    tgridprop16k_h25 = tgrid16k_h25/tot_h25
-    tgridprop32k_h25 = tgrid32k_h25/tot_h25
-    tgridprop160k_h25 = tgrid160k_h25/tot_h25
-    tgridprop320k_h25 = tgrid320k_h25/tot_h25
+    tgridprop16k_h25 = tgrid16k_h25/totbls_h25
+    tgridprop32k_h25 = tgrid32k_h25/totbls_h25
+    tgridprop160k_h25 = tgrid160k_h25/totbls_h25
+    tgridprop320k_h25 = tgrid320k_h25/totbls_h25
     meanmaxfreq_h25 = meanmaxfreq_h25/tot_h25
     
     
@@ -342,7 +354,7 @@ if not OD_flag:
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
     ax.invert_yaxis()
-    ax.set(xlabel='t2', ylabel='t1')
+    ax.set(xlabel='s2', ylabel='s1')
     #plt.show()
     plt.savefig(outdir+"h25_nsim.png")
     
@@ -355,7 +367,7 @@ if not OD_flag:
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
     ax.invert_yaxis()
-    ax.set(xlabel='t2', ylabel='t1')
+    ax.set(xlabel='s2', ylabel='s1')
     ax.set_title('Proportion of losses')
     #plt.show()
     plt.savefig(outdir+"h25_proplost.png")
@@ -366,7 +378,7 @@ if not OD_flag:
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
     ax.invert_yaxis()
-    ax.set(xlabel='t2', ylabel='t1')
+    ax.set(xlabel='s2', ylabel='s1')
     ax.set_title('Mean time to loss')
     #plt.show()
     plt.savefig(outdir+"h25_meantlost.png")
@@ -380,7 +392,7 @@ if not OD_flag:
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
     ax.invert_yaxis()
-    ax.set(xlabel='t2', ylabel='t1')
+    ax.set(xlabel='s2', ylabel='s1')
     ax.set_title('Proportion of fixations')
     #plt.show()
     plt.savefig(outdir+"h25_propfix.png")
@@ -391,7 +403,7 @@ if not OD_flag:
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
     ax.invert_yaxis()
-    ax.set(xlabel='t2', ylabel='t1')
+    ax.set(xlabel='s2', ylabel='s1')
     ax.set_title('Mean time to fixation')
     #plt.show()
     plt.savefig(outdir+"h25_meantfix.png")
@@ -399,49 +411,49 @@ if not OD_flag:
     # Polymporphism
     
     plt.figure()
-    ax = sns.heatmap(tgridprop16k_h25, linewidth=0.5,
+    ax = sns.heatmap(tgridprop16k_h25, annot=True, fmt='.2f', cmap="viridis", linewidth=0.5,
             cbar_kws={'label': 'Proportion of simulations with polymorphism'},
                  vmin=0,vmax=1,
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
     ax.invert_yaxis()
-    ax.set(xlabel='t2', ylabel='t1')
+    ax.set(xlabel='s2', ylabel='s1')
     ax.set_title('16k generations')
     #plt.show()
     plt.savefig(outdir+"h25_t16kproppoly.png")
     
     plt.figure()
-    ax = sns.heatmap(tgridprop32k_h25, linewidth=0.5,
+    ax = sns.heatmap(tgridprop32k_h25, annot=True, fmt='.2f', cmap="viridis", linewidth=0.5,
             cbar_kws={'label': 'Proportion of simulations with polymorphism'},
                  vmin=0,vmax=1,
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
     ax.invert_yaxis()
-    ax.set(xlabel='t2', ylabel='t1')
+    ax.set(xlabel='s2', ylabel='s1')
     ax.set_title('32k generations')
     #plt.show()
     plt.savefig(outdir+"h25_t32kproppoly.png")
     
     plt.figure()
-    ax = sns.heatmap(tgridprop160k_h25, linewidth=0.5,
+    ax = sns.heatmap(tgridprop160k_h25, annot=True, fmt='.2f', cmap="viridis", linewidth=0.5,
             cbar_kws={'label': 'Proportion of simulations with polymorphism'},
                  vmin=0,vmax=1,
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
     ax.invert_yaxis()
-    ax.set(xlabel='t2', ylabel='t1')
+    ax.set(xlabel='s2', ylabel='s1')
     ax.set_title('160k generations')
     #plt.show()
     plt.savefig(outdir+"h25_t160kproppoly.png")
     
     plt.figure()
-    ax = sns.heatmap(tgridprop320k_h25, linewidth=0.5,
+    ax = sns.heatmap(tgridprop320k_h25, annot=True, fmt='.2f', cmap="viridis", linewidth=0.5,
             cbar_kws={'label': 'Proportion of simulations with polymorphism'},
                  vmin=0,vmax=1,
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
     ax.invert_yaxis()
-    ax.set(xlabel='t2', ylabel='t1')
+    ax.set(xlabel='s2', ylabel='s1')
     ax.set_title('320k generations')
     #plt.show()
     plt.savefig(outdir+"h25_t320kproppoly.png")
@@ -453,9 +465,7 @@ if not OD_flag:
                  xticklabels=sorted(s_dic.keys()),
                  yticklabels=sorted(s_dic.keys()))
     ax.invert_yaxis()
-    ax.set(xlabel='t2', ylabel='t1')
+    ax.set(xlabel='s2', ylabel='s1')
     ax.set_title('Mean max freq')
     #plt.show()
     plt.savefig(outdir+"h25_meanmaxfreq.png")
-    
-
