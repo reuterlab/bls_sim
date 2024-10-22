@@ -1,4 +1,8 @@
-#Rscript plot_sfsviolin.R ../baller/infiles_testing/OD_N20k_r1e-8_grid0.1/ output_s1-1_r.*c160000_.*.balmixder 100 ../plots/violin_w100_OD_N20k_r1e-8_m1e-8_c160000.png
+#Rscript plot_sfsviolin.R ../baller/infiles/OD_N20k_r1e-8_grid0.1/ output_s1-1_r.*c160000_.*.balmixder 100 ../plots/OD_N20k_r1e-8_m1e-8_s1-1_c160000_violinw100.png
+#Rscript plot_sfsviolin.R ../baller/infiles/OD_N20k_r1e-8_grid0.1/ output_s1-1_r.*c160000_.*.balmixder 200 ../plots/OD_N20k_r1e-8_m1e-8_s1-1_c160000_violinw200.png
+#Rscript plot_sfsviolin.R ../baller/infiles/OD_N20k_r1e-8_grid0.1/ output_s1-1_r.*c160000_.*.balmixder 500 ../plots/OD_N20k_r1e-8_m1e-8_s1-1_c160000_violinw500.png
+#Rscript plot_sfsviolin.R ../baller/infiles/OD_N20k_r1e-8_grid0.1/ output_s1-1_r.*c160000_.*.balmixder 1000 ../plots/OD_N20k_r1e-8_m1e-8_s1-1_c160000_violinw1000.png
+#Rscript plot_sfsviolin.R ../baller/infiles/OD_N20k_r1e-8_grid0.1/ output_s1-1_r.*c160000_.*.balmixder 2000 ../plots/OD_N20k_r1e-8_m1e-8_s1-1_c160000_violinw2000.png
 
 library(ggplot2)
 
@@ -49,7 +53,7 @@ plotviolins <- function (dat, winsize=100, plotfname="violin_windows.png"){
         s <- 5000-winsize
         e <- 5000
         dat$win [ dat$distance > s & dat$distance <= e]  <- i
-        winlabels <- c(winlabels, paste(s,e, sep="-"))
+        winlabels <- c(winlabels, paste(s+1,e, sep="-"))
     }
     toplot <- dat[!is.na(dat$win),]
     toplot$win <- factor(toplot$win, levels = 0:i, labels=winlabels) 
@@ -57,7 +61,8 @@ plotviolins <- function (dat, winsize=100, plotfname="violin_windows.png"){
         geom_jitter(aes(x=win, y=x/n))+
         geom_violin(aes(x=win, y=x/n))+
         xlab("Distance from selected site")+
-        ylab("Derived allele frequency")
+        ylab("Derived allele frequency")+
+        theme(axis.text.x = element_text(angle=20))
     ggsave(plotfname, w=6, h=3)
 }
 plotviolins(dat, winsize=winsize, plotfname=plotfname)
