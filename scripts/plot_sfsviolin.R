@@ -15,8 +15,8 @@ plotfname <- args[5]
 
 #inpath <- "../baller/infiles_testing/OD_N20k_r1e-7_grid0.1_m1e-7/"
 #inpattern <- "output_s1-1_h0_r.*_c160000_spl100.balmixder"
-inpath <- "../baller/infiles_testing/OD_N20k_r1e-8_grid0.1/"
-inpattern <- "output_s0.1-0.1_r.*_c160000_mut1e-8_spl100.balmixder"
+#inpath <- "../baller/infiles_testing/OD_N20k_r1e-8_grid0.1/"
+#inpattern <- "output_s0.1-0.1_r.*_c160000_mut1e-8_spl100.balmixder"
 infiles <- list.files(path=inpath, pattern=inpattern)
 
 dat <- read.table (paste0(inpath, infiles[1]), header=T)
