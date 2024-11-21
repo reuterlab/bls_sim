@@ -221,7 +221,7 @@ plt.savefig(outdir+"h50_meantfix.png")
 #---------------------
 ## colorscale form 0-1
 plt.figure()
-ax = sns.heatmap(tgridprop16k_h50, annot=True, fmt='.2f', linewidth=0.5,
+ax = sns.heatmap(tgridprop16k_h50, annot=True, fmt='.2f', cmap="viridis", linewidth=0.5,
         cbar_kws={'label': 'Proportion of simulations with polymorphism'},
                  vmin=0,vmax=1,
                  xticklabels=sorted(s_dic.keys()),
