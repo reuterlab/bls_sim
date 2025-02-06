@@ -36,7 +36,7 @@ initialize() {
     //defineConstant("rand_inv", 1);
 
     setSeed(d_seed);
-    defineConstant("OutputFile", d_folder+"output_s"+sel1+"-"+sel2+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+ ".OD_N20k_r1e-7.txt");
+    defineConstant("OutputFile", d_folder+"output_s"+sel1+"-"+sel2+"_h0_r" + d_repID + "_s"+d_seed+"_j"+jobid+ ".OD_N20k_r1e-7.txt");
     defineConstant("SimEND", 320000);
 	 defineConstant("SimOUT", c(16000,32000,160000,320000));
     defineConstant("starttime", clock());
@@ -121,11 +121,11 @@ initialize() {
           newoutput=output;
           defineGlobal("output", c(newoutput, mut_freq));
           //save tree sequence at this timepoint as well
-          sim.treeSeqOutput(d_folder+"output_s"+sel1+"-"+sel2+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
+          sim.treeSeqOutput(d_folder+"output_s"+sel1+"-"+sel2+"_h0_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
         }
         if(sim.cycle == SimEND){ //if this is the last generation we're simulating, write outputs and end simulation
           writeFile(OutputFile, paste(c(output, "NA", "NA", sim.getValue("maxfreq"), sim.getValue("invading_allele")), sep=","), append=T);
-          sim.treeSeqOutput(d_folder+"output_s"+sel1+"-"+sel2+"_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
+          sim.treeSeqOutput(d_folder+"output_s"+sel1+"-"+sel2+"_h0_r" + d_repID + "_s"+d_seed+"_j"+jobid+"_c"+sim.cycle+".trees");
           print("time at ENDSIM: " + (clock() - starttime));
           print("ENDSIM Reached the end of simulation at " +sim.cycle+" with mutation at freq="+mut_freq);
           sim.simulationFinished(); // finish this simulation
