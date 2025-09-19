@@ -32,19 +32,25 @@ plot_powerdiff <- function(toplot, col, colfactor=FALSE, suffix="diff", xlab="pa
 
 inc_rec_tfps <- pwr[round(pwr$tf,2)==round(pwr$pstar,2) & pwr$Ne==20000 & pwr$mut==1e-8 & pwr$t==160000 & pwr$winsize==3000, ]
 recplot <- plot_powerdiff(inc_rec_tfps, "rec", xlab="Recombination rate")+theme_classic()
+
 inc_mut_tfps <- pwr[round(pwr$tf,2)==round(pwr$pstar,2) & pwr$Ne==20000 & pwr$rec==1e-8 & pwr$t==160000 & pwr$winsize==3000, ]
 mutplot <- plot_powerdiff(inc_mut_tfps, "mut", xlab="Mutation rate")+theme_classic()
+
 inc_selage_tfps <- pwr[round(pwr$tf,2)==round(pwr$pstar,2) & pwr$Ne==20000 & pwr$rec==1e-8 & pwr$mut==1e-8 & pwr$t>=160000 & pwr$winsize==3000, ]
 selageplot <- plot_powerdiff(inc_selage_tfps, "t", xlab="Selection onset (generations ago)")+theme_classic()
 
-g <- plot_grid(recplot+guides(color="none"), mutplot+guides(color="none")+ylab(""), selageplot+guides(color="none")+ylab(""),
-          labels=c("A", "B", "C"), ncol=3)
+std_sims_tfps <- pwr[round(pwr$tf,2)==round(pwr$pstar,2) & pwr$Ne==20000 & pwr$rec==1e-8 & pwr$mut==1e-8 & pwr$t==160000 & pwr$winsize==3000, ]
+red_ne_tfps <- pwr[round(pwr$tf, 2)==round(pwr$pstar, 2) & pwr$Ne==2000 & pwr$rec==1e-8 & pwr$mut==1e-8 & pwr$t==16000 & pwr$winsize==3000, ]
+neplot <- plot_powerdiff(rbind(std_sims_tfps, red_ne_tfps), "Ne", xlab="Effective population size")
+
+g <- plot_grid(recplot+guides(color="none"), mutplot+guides(color="none")+ylab(""), selageplot+guides(color="none")+ylab(""), neplot+guides(color="none")+ylab(""),
+          labels=c("A", "B", "C", "D"), ncol=4)
 # extract the legend from one of the plots
 legend <- get_legend(recplot)
 # add the legend to the row we made earlier. Give it one-third of 
 # the width of one plot (via rel_widths).
-final <- plot_grid(g, legend, rel_widths = c(3, .4))
-ggsave("../plots/rec_mut_t_powerdiff.png", h=3.5, w=12, plot=final)
+final <- plot_grid(g, legend, rel_widths = c(4, .4))
+ggsave("../plots/rec_mut_t_ne_powerdiff.png", h=3.5, w=12, plot=final)
 
 # compare power with different window sizes in standard simulations
 std_sims_tfps <- pwr[round(pwr$tf,2)==round(pwr$pstar,2) & pwr$Ne==20000 & pwr$rec==1e-8 & pwr$mut==1e-8 & pwr$t==160000 , ]
