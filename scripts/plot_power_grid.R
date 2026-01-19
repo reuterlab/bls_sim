@@ -1,3 +1,4 @@
+#source /share/apps/source_files/R/R-4.3.2.source
 library(ggplot2)
 
 outdir <- '../grid_plots_ncd/'
