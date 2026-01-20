@@ -1,4 +1,4 @@
-read_power_table <- function(powerfile){
+read_power_table <- function(powerfile, ncd=T){
     power <- read.table(powerfile, header=T)
 
 #    png("../plots/nsim_hist.png")
@@ -9,7 +9,8 @@ read_power_table <- function(powerfile){
     # remove lines with fewer than 44 bls sims
     power <- power[power$nsim>44,]
 
-    power$tf <- round(power$tf, 6)
+    if(ncd){
+    power$tf <- round(power$tf, 6)}
     # label for each unique set of simulation params
     power$sim <- apply(power, 1, function(x){paste0(x[c(1, 3:10,12:13)],collapse="_")})
 
