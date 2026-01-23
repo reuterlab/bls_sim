@@ -16,6 +16,8 @@ import matplotlib.pyplot as plt
 import argparse
 import random
 import sys
+import warnings
+warnings.simplefilter('ignore', msprime.TimeUnitsMismatchWarning)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", help="input file name: tree sequence file")

@@ -1,6 +1,6 @@
 # NOTE: on CS cluster, run with python 3:
 # source /share/apps/source_files/python/python-3.9.5.source
-# python3 parse_simout.py
+# python3 plot_grids4x4.py -i /SAN/reuterlab/balsel_detection/bls_sim/slimout/OD_N20k_r1e-8_grid0.1/ -o /SAN/reuterlab/balsel_detection/bls_sim/grid_plots4x4/OD_N20k_r1e-8_grid0.1/ -g 0.1
 
 import glob
 import numpy as np
@@ -16,56 +16,65 @@ parser.add_argument("-g", "--grid", help="grid interval")
 args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])
 
 indir = args.indir
+#indir='/SAN/reuterlab/balsel_detection/bls_sim/slimout/OD_N20k_r1e-8_grid0.1/'
+#indir='/SAN/reuterlab/balsel_detection/bls_sim/slimout/AP_N20k_r1e-8_grid0.1/'
+#indir='/SAN/reuterlab/balsel_detection/bls_sim/slimout/SA_N20k_r1e-8_grid0.1/'
+#indir='/SAN/reuterlab/balsel_detection/bls_sim/slimout/SA_N20k_r1e-8_grid0.01/'
 outdir = args.outdir
+#outdir='/SAN/reuterlab/balsel_detection/bls_sim/grid_plots4x4/OD_N20k_r1e-8_grid0.1/'
+#outdir='/SAN/reuterlab/balsel_detection/bls_sim/grid_plots4x4/AP_N20k_r1e-8_grid0.1/'
+#outdir='/SAN/reuterlab/balsel_detection/bls_sim/grid_plots4x4/SA_N20k_r1e-8_grid0.1/'
+#outdir='/SAN/reuterlab/balsel_detection/bls_sim/grid_plots4x4/SA_N20k_r1e-8_grid0.01/'
 grid = args.grid
+#grid='0.1'
 
 files=glob.glob(indir+"*.txt")
 
-tot_h50 = np.zeros((5,5))
-totbls_h50 = np.zeros((5,5)) # total number of sims that went indo bls phase (polym not lost before reaching 5%)
-nlost_h50 = np.zeros((5,5))
-proplost_h50 = np.zeros((5,5))
-meantlost_h50 = np.zeros((5,5))
-nfix_h50 = np.zeros((5,5))
-propfix_h50 = np.zeros((5,5))
-meantfix_h50 = np.zeros((5,5))
-tgrid16k_h50 = np.zeros((5,5))
-tgrid32k_h50 = np.zeros((5,5))
-tgrid160k_h50 = np.zeros((5,5))
-tgrid320k_h50 = np.zeros((5,5))
-tgridprop16k_h50 = np.zeros((5,5))
-tgridprop32k_h50 = np.zeros((5,5))
-tgridprop160k_h50 = np.zeros((5,5))
-tgridprop320k_h50 = np.zeros((5,5))
-meanmaxfreq_h50 = np.zeros((5,5))
+tot_h50 = np.zeros((4,4))
+totbls_h50 = np.zeros((4,4)) # total number of sims that went indo bls phase (polym not lost before reaching 5%)
+nlost_h50 = np.zeros((4,4))
+proplost_h50 = np.zeros((4,4))
+meantlost_h50 = np.zeros((4,4))
+nfix_h50 = np.zeros((4,4))
+propfix_h50 = np.zeros((4,4))
+meantfix_h50 = np.zeros((4,4))
+tgrid16k_h50 = np.zeros((4,4))
+tgrid32k_h50 = np.zeros((4,4))
+tgrid160k_h50 = np.zeros((4,4))
+tgrid320k_h50 = np.zeros((4,4))
+tgridprop16k_h50 = np.zeros((4,4))
+tgridprop32k_h50 = np.zeros((4,4))
+tgridprop160k_h50 = np.zeros((4,4))
+tgridprop320k_h50 = np.zeros((4,4))
+meanmaxfreq_h50 = np.zeros((4,4))
 
-tot_h25 = np.zeros((5,5))
-totbls_h25 = np.zeros((5,5)) # total number of sims that went indo bls phase (polym not lost before reaching 5%)
-nlost_h25 = np.zeros((5,5))
-proplost_h25 = np.zeros((5,5))
-meantlost_h25 = np.zeros((5,5))
-nfix_h25 = np.zeros((5,5))
-propfix_h25 = np.zeros((5,5))
-meantfix_h25 = np.zeros((5,5))
-tgrid16k_h25 = np.zeros((5,5))
-tgrid32k_h25 = np.zeros((5,5))
-tgrid160k_h25 = np.zeros((5,5))
-tgrid320k_h25 = np.zeros((5,5))
-tgridprop16k_h25 = np.zeros((5,5))
-tgridprop32k_h25 = np.zeros((5,5))
-tgridprop160k_h25 = np.zeros((5,5))
-tgridprop320k_h25 = np.zeros((5,5))
-meanmaxfreq_h25 = np.zeros((5,5))
+tot_h25 = np.zeros((4,4))
+totbls_h25 = np.zeros((4,4)) # total number of sims that went indo bls phase (polym not lost before reaching 5%)
+nlost_h25 = np.zeros((4,4))
+proplost_h25 = np.zeros((4,4))
+meantlost_h25 = np.zeros((4,4))
+nfix_h25 = np.zeros((4,4))
+propfix_h25 = np.zeros((4,4))
+meantfix_h25 = np.zeros((4,4))
+tgrid16k_h25 = np.zeros((4,4))
+tgrid32k_h25 = np.zeros((4,4))
+tgrid160k_h25 = np.zeros((4,4))
+tgrid320k_h25 = np.zeros((4,4))
+tgridprop16k_h25 = np.zeros((4,4))
+tgridprop32k_h25 = np.zeros((4,4))
+tgridprop160k_h25 = np.zeros((4,4))
+tgridprop320k_h25 = np.zeros((4,4))
+meanmaxfreq_h25 = np.zeros((4,4))
 
-selalpha = np.zeros((5,5))
-pstar = np.zeros((5,5))
+selalpha = np.zeros((4,4))
+pstar = np.zeros((4,4))
 
 OD_flag = False
 
 if grid=='0.01':
-    s_dic = {0.01:0, 0.02:1, 0.05:2, 0.09:3, 0.1:4}
+    s_dic = {0.01:0, 0.02:1, 0.05:2, 0.1:3}
 if grid=='0.1':
-    s_dic = {0.1:0, 0.2:1, 0.5:2, 0.9:3, 1:4}
+    s_dic = {0.1:0, 0.2:1, 0.5:2, 1:3}
 
 for file in files:
     with open(file) as f:
@@ -76,6 +85,8 @@ for file in files:
             # new columns: sel1,sel2,h,bls_start,16000,32000,160000,320000,lost,fixed,maxfreq,newmut
             s1=round(float(line[0]), 2)
             s2=round(float(line[1]), 2)
+            if s1 not in s_dic.keys() or s2 not in s_dic.keys():
+                continue
             t1 = s_dic[s1]
             t2 = s_dic[s2]
             h = line[2]
@@ -152,7 +163,6 @@ tgridprop320k_h50 = tgrid320k_h50/totbls_h50
 meanmaxfreq_h50 = meanmaxfreq_h50/tot_h50
 
 ### Create plots 
-
 
 # Number of simulations
 

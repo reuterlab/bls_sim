@@ -4,19 +4,19 @@ library(ggplot2)
 outdir <- '../grid_plots_ncd/'
 
 #powerfile <- '../ncd/power_01.txt'
-powerfile="../ncd/power_01_OD100_w3000.ncd2.txt"
+#powerfile="../ncd/power_01_OD100_w3000.ncd2.txt"
 #powerfile <- '../ncd/power_01_tf0.3_w3000.ncd2.txt'
 #outpref <- 'tf0.3_w3000'
 #powerfile <- '../ncd/power_01_tf0.5_w1000.ncd2.txt'
 #outpref <- 'tf0.5_w1000'
 
 source("read_power_table.R")
-pwr <- read_power_table(powerfile)
-pwr$pstar <- unlist(pwr$pstar)
-
-#powerfile="../ncd/sel100_w3000.ncd2_power.txt"
 #pwr <- read_power_table(powerfile)
-#pwr <- pwr[pwr$alpha==0.01,]
+#pwr$pstar <- unlist(pwr$pstar)
+
+powerfile="../ncd/sel100_w3000.ncd2_power.txt"
+pwr <- read_power_table(powerfile)
+pwr <- pwr[pwr$alpha==0.01,]
 
 plot_ap <- function(seltype, h, smin=FALSE,smax=FALSE){
     if(! smin & ! smax){
@@ -107,12 +107,12 @@ plot_powergrid <- function(pwr, seltype, ne, rec, mut, h, t, smin=FALSE,smax=FAL
 # human-like; recent selection (8Ne)
 outpref <- "tf0.5_w3000_"
 plot_powergrid(pwr[pwr$tf==0.5,], seltype="OD", ne=20000, rec=1e-8, mut=1e-8, h=0, t=160000)
-outpref <- "tfpstar_w3000_"
-plot_powergrid(pwr[round(pwr$tf,2)==round(pwr$pstar,2),], seltype="OD", ne=20000, rec=1e-8, mut=1e-8, h=0, t=160000, colmax=0.5)
-plot_powergrid(pwr[round(pwr$tf,2)==round(pwr$pstar,2),],seltype="AP", ne=20000, rec=1e-8, mut=1e-8, h=0.25, t=160000)
-plot_powergrid(pwr[round(pwr$tf,2)==round(pwr$pstar,2),],seltype="AP", ne=20000, rec=1e-8, mut=1e-8, h=0.5, t=160000)
-plot_powergrid(pwr[round(pwr$tf,2)==round(pwr$pstar,2),],seltype="SA", ne=20000, rec=1e-8, mut=1e-8, h=0.25, t=160000)
-plot_powergrid(pwr[round(pwr$tf,2)==round(pwr$pstar,2),],seltype="SA", ne=20000, rec=1e-8, mut=1e-8, h=0.5, t=160000)
+outpref <- "tfpstar_w3000"
+plot_powergrid(pwr[round(pwr$tf,2)==round(pwr$pstar,2),], seltype="OD", ne=20000, rec=1e-8, mut=1e-8, h=0, t=160000, colmax=0.6)
+plot_powergrid(pwr[round(pwr$tf,2)==round(pwr$pstar,2),],seltype="AP", ne=20000, rec=1e-8, mut=1e-8, h=0.25, t=160000, colmax=0.6)
+plot_powergrid(pwr[round(pwr$tf,2)==round(pwr$pstar,2),],seltype="AP", ne=20000, rec=1e-8, mut=1e-8, h=0.5, t=160000, colmax=0.6)
+plot_powergrid(pwr[round(pwr$tf,2)==round(pwr$pstar,2),],seltype="SA", ne=20000, rec=1e-8, mut=1e-8, h=0.25, t=160000, colmax=0.6)
+plot_powergrid(pwr[round(pwr$tf,2)==round(pwr$pstar,2),],seltype="SA", ne=20000, rec=1e-8, mut=1e-8, h=0.5, t=160000, colmax=0.6)
 plot_powergrid(seltype="AP", ne=20000, rec=1e-8, mut=1e-8, h=0.25, t=160000)
 plot_powergrid(seltype="AP", ne=20000, rec=1e-8, mut=1e-8, h=0.5, t=160000)
 # increase recombination

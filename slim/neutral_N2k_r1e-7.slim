@@ -37,7 +37,7 @@ initialize() {
     defineConstant("SimEND", 320000);
 	 defineConstant("SimOUT", c(16000,32000,160000,320000));
     defineConstant("starttime", clock());
-    full_genome_len = 20000 - 1; // simulate 15kb sequence -> changed to 20kb because with Ne=2k and mu=1e-8 there were far from enough central sites with 10kb around them
+    full_genome_len = 50000 - 1; // simulate 15kb sequence -> changed to 50kb because with Ne=2k and mu=1e-8 there were far from enough central sites with 10kb around them
     defineConstant("scaling_factor", 1);
     defineConstant("N", round(2000/scaling_factor));     
 

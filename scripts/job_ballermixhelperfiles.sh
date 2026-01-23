@@ -32,44 +32,29 @@ pip install pandas
 PROJDIR=/SAN/reuterlab/balsel_detection/bls_sim/
 SCRIPTDIR=/SAN/reuterlab/balsel_detection/bls_sim/scripts/
 cd $SCRIPTDIR
-
-## parse vcf files from neutral sims to generate input files for ballermix
-# parse_VCF_polarized.sh parameters: infile=$1; outfile=$2; nseq=$3
-mkdir $PROJDIR/baller
-mkdir $PROJDIR/baller/infiles
 OUTDIR=$PROJDIR/baller/infiles/$simpref
-mkdir $OUTDIR
-
-for infile in $PROJDIR/vcf/$simpref/output_r*vcf.gz
-do 
-    pref=$(basename $infile .vcf.gz)
-    ./parse_VCF_polarized.sh $infile $OUTDIR/$pref $n 
-done
 
 ## Helper files (SFS) for Ballermix.
-#Need to redo this with concatednated input files from all chromos
-echo "concat all input files"
-printf "physPos\tgenPos\tx\tn\n" >  $OUTDIR/all_c16000_mut1e-8_spl100_concat.balmixder
-for file in $OUTDIR/output_*c16000_mut1e-8_spl100.balmixder; do tail -n +2 $file ; done >> $OUTDIR/all_c16000_mut1e-8_spl100_concat.balmixder
+echo "concat all input files for each selection age"
+printf "physPos\tgenPos\tx\tn\n" >  $OUTDIR/all_c16000_spl100_concat.balmixder
+for file in $OUTDIR/output_*c16000_mut*_spl100.balmixder; do tail -n +2 $file ; done >> $OUTDIR/all_c16000_spl100_concat.balmixder
 
-printf "physPos\tgenPos\tx\tn\n" >  $OUTDIR/all_c32000_mut1e-8_spl100_concat.balmixder
-for file in $OUTDIR/output_*c32000_mut1e-8_spl100.balmixder; do tail -n +2 $file ; done >> $OUTDIR/all_c32000_mut1e-8_spl100_concat.balmixder
+printf "physPos\tgenPos\tx\tn\n" >  $OUTDIR/all_c32000_spl100_concat.balmixder
+for file in $OUTDIR/output_*c32000_mut*_spl100.balmixder; do tail -n +2 $file ; done >> $OUTDIR/all_c32000_spl100_concat.balmixder
 
-printf "physPos\tgenPos\tx\tn\n" >  $OUTDIR/all_c160000_mut1e-8_spl100_concat.balmixder
-for file in $OUTDIR/output_*c160000_mut1e-8_spl100.balmixder; do tail -n +2 $file ; done >> $OUTDIR/all_c160000_mut1e-8_spl100_concat.balmixder
+printf "physPos\tgenPos\tx\tn\n" >  $OUTDIR/all_c160000_spl100_concat.balmixder
+for file in $OUTDIR/output_*c160000_mut*_spl100.balmixder; do tail -n +2 $file ; done >> $OUTDIR/all_c160000_spl100_concat.balmixder
 
-printf "physPos\tgenPos\tx\tn\n" >  $OUTDIR/all_c320000_mut1e-8_spl100_concat.balmixder
-for file in $OUTDIR/output_*c320000_mut1e-8_spl100.balmixder; do tail -n +2 $file ; done >> $OUTDIR/all_c320000_mut1e-8_spl100_concat.balmixder
+printf "physPos\tgenPos\tx\tn\n" >  $OUTDIR/all_c320000_spl100_concat.balmixder
+for file in $OUTDIR/output_*c320000_mut*_spl100.balmixder; do tail -n +2 $file ; done >> $OUTDIR/all_c320000_spl100_concat.balmixder
 
 #git clone https://github.com/bioXiaoheng/BalLeRMix/
 echo "get ballermix spect"
-mkdir $PROJDIR/baller/helperfiles
-# any reason to use python3.10?
-#python3.10 BalLeRMix/software/BalLeRMix_v2.5.py -i ../data/${pop}_concat.balmixder.minrec --getSpect --spect ../results/ballermix/${pop}_concat.B2spect_DAF
-python3 BalLeRMix/software/BalLeRMix_v2.5.py -i $OUTDIR/all_c16000_mut1e-8_spl100_concat.balmixder --getSpect --spect $PROJDIR/baller/helperfiles/all_c16000_mut1e-8_spl100_concat.B2spect_DAF
-python3 BalLeRMix/software/BalLeRMix_v2.5.py -i $OUTDIR/all_c32000_mut1e-8_spl100_concat.balmixder --getSpect --spect $PROJDIR/baller/helperfiles/all_c32000_mut1e-8_spl100_concat.B2spect_DAF
-python3 BalLeRMix/software/BalLeRMix_v2.5.py -i $OUTDIR/all_c160000_mut1e-8_spl100_concat.balmixder --getSpect --spect $PROJDIR/baller/helperfiles/all_c160000_mut1e-8_spl100_concat.B2spect_DAF
-python3 BalLeRMix/software/BalLeRMix_v2.5.py -i $OUTDIR/all_c320000_mut1e-8_spl100_concat.balmixder --getSpect --spect $PROJDIR/baller/helperfiles/all_c320000_mut1e-8_spl100_concat.B2spect_DAF
+mkdir $OUTDIR/helperfiles
+python3 BalLeRMix/software/BalLeRMix_v2.5.py -i $OUTDIR/all_c16000_spl100_concat.balmixder --getSpect --spect $OUTDIR/helperfiles/all_c16000_spl100_concat.B2spect_DAF
+python3 BalLeRMix/software/BalLeRMix_v2.5.py -i $OUTDIR/all_c32000_spl100_concat.balmixder --getSpect --spect $OUTDIR/helperfiles/all_c32000_spl100_concat.B2spect_DAF
+python3 BalLeRMix/software/BalLeRMix_v2.5.py -i $OUTDIR/all_c160000_spl100_concat.balmixder --getSpect --spect $OUTDIR/helperfiles/all_c160000_spl100_concat.B2spect_DAF
+python3 BalLeRMix/software/BalLeRMix_v2.5.py -i $OUTDIR/all_c320000_spl100_concat.balmixder --getSpect --spect $OUTDIR/helperfiles/all_c320000_spl100_concat.B2spect_DAF
 
 echo "qsub script end" 
 date

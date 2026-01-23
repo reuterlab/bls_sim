@@ -72,3 +72,4 @@ for treefile in $INDIR/output_s${s1}-${s2}_h${h}_*c${selage}.trees; do # this wi
 done
 
 echo "FINISHED" 
+qstat -j $JOB_ID

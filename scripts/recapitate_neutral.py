@@ -74,7 +74,7 @@ nodespl = [mutated.individual(x).nodes[0] for x in indspl]+[mutated.individual(x
 mutsim_splind = mutated.simplify(samples=nodespl)
 
 # choose central mutation
-central_site_idx = np.argmin([abs(i-9999) for i in mutsim_splind.sites_position])
+central_site_idx = np.argmin([abs(i-24999) for i in mutsim_splind.sites_position])
 central_site = mutsim_splind.sites_position[central_site_idx]
 if central_site-4999 < 0 or central_site+5000 > mutsim_splind.sequence_length:
     print ("ERROR: there is no suitable 10kb window. central_site = "+ str(central_site))

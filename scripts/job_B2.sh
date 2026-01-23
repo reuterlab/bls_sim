@@ -40,14 +40,11 @@ BALDIR=$PROJDIR/baller
 mkdir $BALDIR/results
 mkdir $BALDIR/results/$simpref
 
-for rep in {1..100}; do
-    for infile in $BALDIR/infiles/$simpref/output*_r${rep}_*_c${age}_mut1e-8_spl100.balmixder
+for rep in $(seq 1 ${nrep}); do
+    for infile in $BALDIR/infiles/$simpref/output*_r${rep}_*_c${age}_*_spl100.balmixder
     do 
         inpref=$(basename $infile .balmixder)
     #    echo $inpref
-        python3 BalLeRMix/software/BalLeRMix_v2.5.py -i $infile -o $BALDIR/results/$simpref/${inpref}.B2 --spect $PROJDIR/baller/helperfiles/all_c${age}_mut1e-8_spl100_concat.B2spect_DAF -w 10000 --fixSize --physPos --rec 1e-6
+        python3 BalLeRMix/software/BalLeRMix_v2.5.py -i $infile -o $BALDIR/results/$simpref/${inpref}.B2 --spect $BALDIR/infiles/$helperdir/all_c${age}_spl100_concat.B2spect_DAF -w 10000 --fixSize --physPos --rec ${rec}
     done
 done
-
-printf "physPos\tgenPos\tLR\txhat\tAhat\tnumSites\n" > $BALDIR/results/$simpref/allrep_c${age}_mut1e-8_spl100_centralsite.B2 
-awk '$1==4999' $BALDIR/results/$simpref/output_r*_c${age}_mut1e-8_spl100.B2 >> $BALDIR/results/$simpref/allrep_c${age}_mut1e-8_spl100_centralsite.B2

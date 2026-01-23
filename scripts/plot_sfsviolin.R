@@ -57,24 +57,26 @@ plotviolins <- function (dat, winsize=100, nbins=10, plotfname="violin_windows.p
         winlabels <- c(winlabels, paste(s+1,e, sep="-"))
     }
     toplot <- dat[!is.na(dat$win),]
+    toplot$maf <- toplot$x/toplot$n
+    toplot$maf[ toplot$maf > 0.5 ] <- 1 - toplot$maf[toplot$maf > 0.5] 
     toplot$win <- factor(toplot$win, levels = 0:i, labels=winlabels) 
     ggplot(toplot)+
-        geom_jitter(aes(x=win, y=x/n))+
-        geom_violin(aes(x=win, y=x/n))+
-        stat_summary(aes(x=win, y=x/n, group=1, linetype="median"), 
+        geom_jitter(aes(x=win, y=maf), alpha=0.5)+
+        geom_violin(aes(x=win, y=maf))+
+        stat_summary(aes(x=win, y=maf, group=1, linetype="median"), 
                      fun.y = median, 
-                     geom="line")+
-        stat_summary(aes(x=win, y=x/n, group=1, linetype="75%"),
+                     geom="line", color="red")+
+        stat_summary(aes(x=win, y=maf, group=1, linetype="75%"),
                      fun.y = function(z) { quantile(z,0.75) },
-                     geom="line")+
-        stat_summary(data=toplot[toplot$distance!=0,], aes(x=win, y=x/n, group=1, color="# SNPs"),
-                     fun.y = function(z) { length(z)/winsize },
-                     geom="line", linewidth=2, alpha=0.5)+
-        scale_color_manual("", values=c("# SNPs"="red"))+
+                     geom="line", color="red")+
+ #       stat_summary(data=toplot[toplot$distance!=0,], aes(x=win, y=x/n, group=1, color="# SNPs"),
+ #                    fun.y = function(z) { length(z)/winsize },
+ #                    geom="line", linewidth=2, alpha=0.5)+
+#        scale_color_manual("", values=c("# SNPs"="red"))+
         scale_linetype_manual("", values=c("median"="solid", "75%"="dashed"))+
         xlab("Distance from selected site")+
-        ylab("Derived allele frequency")+
-        theme(axis.text.x = element_text(angle=20))
-    ggsave(plotfname, w=6, h=3)
+        ylab("Minor allele frequency")+
+        theme(axis.text.x = element_text(angle=30))
+    ggsave(plotfname, w=7, h=3)
 }
 plotviolins(dat, winsize=winsize, nbins=nbins, plotfname=plotfname)
