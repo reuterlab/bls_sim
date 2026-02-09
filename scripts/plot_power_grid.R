@@ -106,7 +106,7 @@ plot_powergrid <- function(pwr, seltype, ne, rec, mut, h, t, smin=FALSE,smax=FAL
 
 # human-like; recent selection (8Ne)
 outpref <- "tf0.5_w3000_"
-plot_powergrid(pwr[pwr$tf==0.5,], seltype="OD", ne=20000, rec=1e-8, mut=1e-8, h=0, t=160000)
+plot_powergrid(pwr[pwr$tf==0.5,], seltype="OD", ne=20000, rec=1e-8, mut=1e-8, h=0, t=160000, colmax=0.6)
 outpref <- "tfpstar_w3000"
 plot_powergrid(pwr[round(pwr$tf,2)==round(pwr$pstar,2),], seltype="OD", ne=20000, rec=1e-8, mut=1e-8, h=0, t=160000, colmax=0.6)
 plot_powergrid(pwr[round(pwr$tf,2)==round(pwr$pstar,2),],seltype="AP", ne=20000, rec=1e-8, mut=1e-8, h=0.25, t=160000, colmax=0.6)
