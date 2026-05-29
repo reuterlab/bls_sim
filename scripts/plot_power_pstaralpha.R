@@ -25,22 +25,23 @@ plot_pstar_alpha <- function(df, pref="df"){
         theme_classic()
     ggsave(paste0("../plots/", pref, "_pstar_selalpha_power.png"), h=3.5, w=5)
     p <- ggplot(df, aes(pstar, power))+
-        geom_jitter(aes(color=pstar, shape=seltype),
+        geom_jitter(aes(color=selalpha, shape=seltype),
                     width=0.02, stroke=1.5, size=1.5)+
         xlab(expression(paste("Equilibrium frequency (", hat(p), ")")))+ylab("Power")+
         scale_shape(name="Model of\nselection", solid=FALSE)+
-        scale_color_viridis_c(name=expression(paste("Equilibrium\nfrequency (", hat(p), ")")), option="mako", end=0.8)+
-        geom_smooth(method='lm', formula=y~x, color="gray20")+
-        theme_classic()
+        scale_color_viridis_c(name=expression(paste("Selection\nstrength (", alpha, " )")), option="rocket")+
+#        geom_smooth(method='lm', formula=y~x, color="gray20")+
+        theme_classic(base_size=15)
     ggsave(paste0("../plots/", pref,"_pstar_power.png"), h=3.5, w=5)
-    a <- ggplot(df, aes(selalpha, power))+
-        geom_smooth(aes(color=pstar, group=round(pstar, 2)), alpha=0.5, linewidth=0.5, se=FALSE, method='lm', formula=y~x)+
+    a <- 
+        ggplot(df, aes(selalpha, power))+
+ #       geom_smooth(aes(color=pstar, group=pstar), alpha=0.5, linewidth=0.5, se=FALSE, method='lm', formula=y~x)+
         geom_point(aes(color=pstar, shape=seltype),
                    stroke=1.5, size=1.5)+
         xlab(expression(paste("Selection strength (", alpha, " )")))+ylab("Power")+
         scale_shape(name="Model of\nselection", solid=FALSE)+
         scale_color_viridis_c(name=expression(paste("Equilibrium\nfrequency (", hat(p), ")")), option="mako", end=0.8)+
-        theme_classic()
+        theme_classic(base_size=15)
     ggsave(paste0("../plots/", pref,"_selalpha_power.png"), h=3.5, w=5)
     t <-ggplot(df, aes(seltype, power))+
         geom_jitter(aes(color=pstar,  shape=seltype),
@@ -48,7 +49,7 @@ plot_pstar_alpha <- function(df, pref="df"){
         xlab("Model of selection")+ylab("Power")+
         scale_shape(name="Model of\nselection", solid=FALSE)+
         scale_color_viridis_c(name=expression(paste("Equilibrium\nfrequency (", hat(p), ")")), option="mako", end=0.8)+
-        theme_classic()
+        theme_classic(base_size=15)
     ggsave(paste0("../plots/", pref,"_seltype_power.png"), h=3.5, w=5)
     ggplot(df, aes(pstar, seltype))+
         geom_jitter(aes(shape=seltype), height=0.1, stroke=1.5, size=1.5)+
@@ -68,9 +69,9 @@ plot_pstar_alpha <- function(df, pref="df"){
     #gp <- ggplotGrob(p+guides(colour="none", shape="none")+ylab(""))
     #gt <- ggplotGrob(t+ylab(""))
     #g <- cbind(ga,gp,gt)
-    g <- plot_grid(p+guides(color="none", shape="none"), a+guides(color="none", shape="none")+ylab(""), t+ylab(""),
+    g <- plot_grid(p+guides(shape="none"), a+guides(shape="none")+ylab(""), t+guides(color="none")+ylab(""),
               labels=c("A", "B", "C"), ncol=3)
-    ggsave(paste0("../plots/", pref,"_pstar_selalpha_power_all.png"), h=3.5, w=12, plot=g)
+    ggsave(paste0("../plots/", pref,"_pstar_selalpha_power_all.png"), h=3, w=12, plot=g)
 }
 
 std_sims_tfps <- pwr[round(pwr$tf,2)==round(pwr$pstar,2) & pwr$Ne==20000 & pwr$rec==1e-8 & pwr$mut==1e-8 & pwr$t==160000 , ]
@@ -90,6 +91,10 @@ mean(std_sims_tfps$power[round(std_sims_tfps$selalpha,3)==2])
 
 pwr[ pwr$rec==1e-8 & pwr$mut==1e-8 & pwr$s1==0.1 &  pwr$s2==0.1 & pwr$Ne==20000 & pwr$t==160000,]
 
+######################################################
+# plot with Max's power predictions
+std_sims_tfps_powerpred <- read.csv("std_sims_tfps_withPred.csv")
+plot_pstar_alpha(std_sims_tfps_powerpred, "stdsim_tfps_withPred")
 
 ######################################################
 #other plots for Max's presentation in Edinburgh
