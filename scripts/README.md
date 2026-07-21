@@ -2,11 +2,19 @@
 
 ## 1. run SLiM simulations with the following calls:
 
+- initiate 100 simulations
 ```
 1_run_OD_rec.sh
 1_run_AP_rec.sh
 1_run_SA_rec.sh
 1_run_neutral_rec.sh
+```
+
+- initiate extra simulations to complete set of 100 simulations with polymorphism maintained
+```
+1_run_OD_rec_extras.sh
+1_run_AP_rec_extras.sh
+1_run_SA_rec_extras.sh
 ```
 
 ## 2. generate parameter combinations (output=params.txt)
@@ -21,10 +29,18 @@ paramsfile=params.txt
 qsub -v PARAMSFILE=$paramsfile -t 1-$(wc -l $paramsfile |awk '{print$1}') job3_ts2vcf.sh
 ```
 
-## (4. generate ballermix helper files - not needed for NCD) 
+## (4. generate ballermix input and helper files - not needed for NCD) 
+
+- ballermix input files
+
+`job3_vcf2ballermixinput.sh`
+`job3_vcf2ballermixinput_100.sh` and `job3_vcf2ballermixinput_nn.sh`
+
+- ballermix helper files
+
 `job4_ballermix_helperfiles.sh`
 
-- example:
+    - example:
 ```
 paramsfile=params.txt
 qsub -v PARAMSFILE=$paramsfile -t 1-$(wc -l $paramsfile | awk '{print $1}') job4_ballermix_helperfiles.sh
