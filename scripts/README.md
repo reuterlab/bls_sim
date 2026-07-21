@@ -141,7 +141,7 @@ paramsfile=params_extras_main_feq.txt
 qsub -v PARAMSFILE=$paramsfile -v WINSIZE=3000 -t 1-$(wc -l $paramsfile |awk '{print$1}') job5_run_ncd_tf_100.sh 
 ```
 
-### Ballermix -> tasks for all params except neutralgenome
+### Ballermix
 `job5_run_ballermix_feq.sh`
 
 - examples:
@@ -159,15 +159,22 @@ qsub -v PARAMSFILE=$paramsfile -v WINSIZE=3000 -t 1-$(wc -l $paramsfile |awk '{p
 qsub -v PARAMSFILE=$paramsfile -t 1-$(wc -l $paramsfile |awk '{print$1}') job6_ballerpower_feq.sh
 ```
 
-## 7. extract power at alpha=0.01 and alpha=0.05 for comparisons done locally
-```
-BALDIR=baller/results/
-cat ${BALDIR}/*/all_s*_power.txt |sort -ur > ${BALDIR}/allpower.txt
-awk 'NR==1 {print}; NR>1 && $1==0.01 {print}' $BALDIR/allpower.txt > $BALDIR/power_01.txt
-awk 'NR==1 {print}; NR>1 && $1==0.05 {print}' $BALDIR/allpower.txt > $BALDIR/power_05.txt
+## 7. analyses in ms
 
-NCDDIR=ncd/
-cat ${NCDDIR}/*/all_s*_power.txt |sort -ur > ${NCDDIR}/allpower.txt
-awk 'NR==1 {print}; NR>1 && $1==0.01 {print}' $NCDDIR/allpower.txt > $NCDDIR/power_01.txt
-awk 'NR==1 {print}; NR>1 && $1==0.05 {print}' $NCDDIR/allpower.txt > $NCDDIR/power_05.txt
-```
+### GLMs
+
+`glms.R`
+
+### Figures
+
+- plots of power as a function of pstar, alpha and model of selection
+`plot_power_pstaralpha.R`
+
+- line plots comparing power with different parameters
+`plot_powerdiff.R` 
+
+- predicted power
+`plot_predictedpower.R`
+
+- Figure S13
+`power_ncdXballer.R`
