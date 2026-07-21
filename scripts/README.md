@@ -39,7 +39,6 @@ qsub -v PARAMSFILE=$paramsfile -t 1-$(wc -l $paramsfile |awk '{print$1}') job3_t
 ```
 
 ## 4a. cp sets of 100 vcfs to a dir and run next steps from there
-- count how many sims with each set of params, originally
 ```
 cd /SAN/reuterlab/balsel_detection/bls_sim/vcf
 
@@ -130,11 +129,16 @@ qsub -v PARAMSFILE=$paramsfile -t 1-$(wc -l $paramsfile | awk '{print $1}') job4
 
 ### NCD
 
-`job5b_run_ncd_tf.sh`
+`job5_run_ncd_tf_100.sh`
 
-- example:
+- examples:
 ```
-qsub -v PARAMSFILE=$paramsfile -v TF=0.5 -v WINSIZE=3000 -t 1-$(wc -l $paramsfile |awk '{print$1}') job5b_run_ncd_tf.sh 
+# with target frequency fixed at 0.5
+qsub -v PARAMSFILE=$paramsfile -v TF=0.5 -v WINSIZE=3000 -t 1-$(wc -l $paramsfile |awk '{print$1}') job5_run_ncd_tf_100.sh 
+
+# with target frequency = equilibrium frequency
+paramsfile=params_extras_main_feq.txt
+qsub -v PARAMSFILE=$paramsfile -v WINSIZE=3000 -t 1-$(wc -l $paramsfile |awk '{print$1}') job5_run_ncd_tf_100.sh 
 ```
 
 ### Ballermix -> tasks for all params except neutralgenome
