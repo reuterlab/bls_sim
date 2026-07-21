@@ -142,27 +142,21 @@ qsub -v PARAMSFILE=$paramsfile -v WINSIZE=3000 -t 1-$(wc -l $paramsfile |awk '{p
 ```
 
 ### Ballermix -> tasks for all params except neutralgenome
-`job5_run_ballermix.sh`
+`job5_run_ballermix_feq.sh`
 
 - examples:
 ```
-awk '$2==20000 && $3==1e-7 && $4==1e-8' params.txt | grep -v neutral > params_N20k_1e-7_m1e-8_sel.txt
-paramsfile=params_N20k_1e-7_m1e-8_sel.txt
-qsub -v PARAMSFILE=$paramsfile -t 1-$(wc -l $paramsfile |awk '{print$1}') job5_run_ballermix.sh
-
-# to run each rep as a task for neutralnull
-awk '$1=="neutralnull" && $2==20000 && $3==1e-7 && $4==1e-8' params_reps.txt > params_reps_N20k_r1e-7_m1e-8_neu.txt
-paramsfile=params_reps_N20k_r1e-7_m1e-8_neu.txt
-qsub -v PARAMSFILE=$paramsfile -t 1-$(wc -l $paramsfile |awk '{print$1}') job5_run_ballermix_reps.sh
+paramsfile=params_extras_main_feq.txt
+qsub -v PARAMSFILE=$paramsfile -t 1-$(wc -l $paramsfile |awk '{print$1}') job5_run_ballermix_feq.sh
 ```
 
 ## 6. calculate power per param combination
-`job6_ballerpower.sh` and `job6b_ncdpower.sh`
+`job6_ncdpower_tf_100.sh` and `job6_ballerpower_feq.sh`
 
 - examples:
 ```
-qsub -v PARAMSFILE=$paramsfile -t 1-$(wc -l $paramsfile |awk '{print$1}')  job6_ballerpower.sh
-qsub -v PARAMSFILE=$paramsfile -v TF=0.5 -v WINSIZE=1000 -t 1-$(wc -l $paramsfile |awk '{print $1}') job6b_ncdpower.sh
+qsub -v PARAMSFILE=$paramsfile -v WINSIZE=3000 -t 1-$(wc -l $paramsfile |awk '{print $1}') job6_ncdpower_tf_100.sh
+qsub -v PARAMSFILE=$paramsfile -t 1-$(wc -l $paramsfile |awk '{print$1}') job6_ballerpower_feq.sh
 ```
 
 ## 7. extract power at alpha=0.01 and alpha=0.05 for comparisons done locally
