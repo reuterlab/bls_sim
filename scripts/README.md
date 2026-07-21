@@ -31,10 +31,15 @@ qsub -v PARAMSFILE=$paramsfile -t 1-$(wc -l $paramsfile |awk '{print$1}') job3_t
 
 ## (4. generate ballermix input and helper files - not needed for NCD) 
 
-- ballermix input files
+- ballermix input files from vcf files (for sets of 100 simulations with selection and for sets of 1000 neutral simulations): 
 
-`job3_vcf2ballermixinput.sh`
 `job3_vcf2ballermixinput_100.sh` and `job3_vcf2ballermixinput_nn.sh`
+
+    - example runs:
+```
+qsub -v PARAMSFILE=$paramsfile -t 1-$(wc -l $paramsfile |awk '{print$1}') job3_vcf2ballermixinput_100.sh
+qsub -v PARAMSFILE=$paramsfile -t 1-$(wc -l $paramsfile |awk '{print$1}') job3_vcf2ballermixinput_nn.sh
+```
 
 - ballermix helper files
 
